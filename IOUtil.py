@@ -1,4 +1,7 @@
-
+import sys
+import logging
+import json
+import numpy as np
 
 def get_word_dict(sentences, tokenize=True):
     # create vocab of words
@@ -29,3 +32,7 @@ def get_glove(glove_path, word_dict):
                     len(word_vec), len(word_dict)))
 
     return word_vec
+
+
+def load_numpy_arraies(file_path):
+    return np.load(file_path)

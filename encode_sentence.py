@@ -5,8 +5,10 @@ import torch
 import logging
 import json
 import sys
+import IOUtil
 
-GLOVE_PATH = "/Users/zxj/Downloads/glove.840B.300d.txt"
+DATA_PATH = "/home/zxj/Downloads/data"
+GLOVE_PATH = DATA_PATH + "/glove.840B.300d.txt"
 
 
 def load_sentences(file_path):
@@ -19,19 +21,24 @@ def load_sentences(file_path):
         sys.exit(1)
 
 
-def encoding_test():
-    model = torch.load(
-        "/Users/zxj/Downloads/sentence_evaluation/InferSent/encoder/infersent.allnli.pickle",
-    map_location=lambda storage, loc: storage)  #type: BLSTMEncoder
+def encoding_setences(model_path):
+    model = torch.load(model_path)  #type: BLSTMEncoder
 
     model.set_glove_path(GLOVE_PATH)
     model.build_vocab_k_words(K=100000)
-    file_path = "/Users/zxj/Downloads/sentence_evaluation/UD_English/pure-en-ud-train.txt"
-    setence_dict = load_sentences(file_path)
+    file_path = DATA_PATH + "/en-ud-test-samples.txt"
+    setence_dicts = load_sentences(file_path)
 
-    sentences = [ele["sentence"] for ele in setence_dict]
-    embeddings = model.encode(sentences[:100], bsize=128, tokenize=True, verbose=True)
+    sentences = [ele["sentence"] for ele in setence_dicts]
+    embeddings = model.encode(sentences, bsize=128, tokenize=True, verbose=True)
+    return embeddings
 
+
+def output_encoding():
+    model_path = DATA_PATH + "/infersent.allnli.pickle"
+    setence_embeddings = encoding_setences(model_path)
+    output_path = DATA_PATH + "/infer-sent-embeddings-test"
+    np.save(output_path, setence_embeddings)
 
 if __name__ == '__main__':
-    encoding_test()
+    output_encoding()
