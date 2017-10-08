@@ -3,6 +3,7 @@ import logging
 import json
 import numpy as np
 
+
 def get_word_dict(sentences, tokenize=True):
     # create vocab of words
     word_dict = {}
@@ -13,7 +14,7 @@ def get_word_dict(sentences, tokenize=True):
     for sent in sentences:
         for word in sent:
             if word not in word_dict:
-                word_dict[word] = ''
+                word_dict[word.lower()] = ''
     word_dict['<s>'] = ''
     word_dict['</s>'] = ''
     return word_dict
@@ -22,11 +23,11 @@ def get_word_dict(sentences, tokenize=True):
 def get_glove(glove_path, word_dict):
     # create word_vec with glove vectors
     word_vec = {}
-    with open(glove_path) as f:
+    with open(glove_path, encoding="utf8") as f:
         for line in f:
             word, vec = line.split(' ', 1)
-            if word in word_dict:
-                word_vec[word] = np.fromstring(vec, sep=' ')
+            if word.lower() in word_dict:
+                word_vec[word.lower()] = vec
 
     print('Found {0}(/{1}) words with glove vectors'.format(
                     len(word_vec), len(word_dict)))
