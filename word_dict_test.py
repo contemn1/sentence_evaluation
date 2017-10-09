@@ -56,7 +56,7 @@ def main(glove_path, train_path):
     glove_list = read_file(glove_path, split_string)
     glove_dict = {ele[0]: np.fromstring(ele[1], sep=" ") for ele in glove_list}
     dicts_list = read_file(train_path, lambda x: json.loads(x))
-    setence_embedding_path = DATAPATH + "infer-sent-embeddings-train.npy"
+    setence_embedding_path = DATAPATH + "infer-sent-embeddings-test.npy"
     setence_embeddings = np.load(setence_embedding_path)
     all_positive_samples = []
     all_negative_samples = []
@@ -67,13 +67,8 @@ def main(glove_path, train_path):
         all_positive_samples.extend(positive_vectors)
         all_negative_samples.extend(negative_vectors)
 
-    output_positive = "all_positive_samples"
-    output_negative = "all_negative_samples"
+    output_positive = "all_positive_samples_test"
+    output_negative = "all_negative_samples_test"
     np.save(output_positive, all_positive_samples)
     np.save(output_negative, all_negative_samples)
 
-if __name__ == '__main__':
-    train_path = DATAPATH + "en-ud-train-samples.txt"
-    test_path = DATAPATH + "en-ud-test-samples.txt"
-    glove_path = DATAPATH + "glove_train_and_test.txt"
-    main(glove_path, train_path)
