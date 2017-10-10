@@ -2,15 +2,15 @@ from IOUtil import load_numpy_arraies
 import numpy as np
 from binary import BinaryClassifierEval
 
-DATA_PATH = "/Users/zxj/Google 云端硬盘/models_and_sample/"
+DATA_PATH = "/home/zxj/Downloads/data/models/"
 
 
-def generate_dataset(positive_path, negative_path):
+def generate_dataset(positive_path, negative_path, limit=1000):
     data = {}
     positive_vectors = load_numpy_arraies(positive_path)
     negative_vectors = load_numpy_arraies(negative_path)
     data["X"] = np.vstack((positive_vectors, negative_vectors))
-    data["y"] = [0]*positive_vectors.shape[0] + [1] * negative_vectors.shape[1]
+    data["y"] = np.array([0]*positive_vectors.shape[0] + [1] * negative_vectors.shape[0])
     return data
 
 
@@ -22,7 +22,8 @@ def classfication(params):
     train_data = generate_dataset(train_positive, train_negative)
     test_data = generate_dataset(test_positive, test_negative)
     binary_classifier = BinaryClassifierEval(train=train_data, test=test_data)
-    binary_classifier.run(params)
+    res = binary_classifier.run(params)
+    print(res)
 
 if __name__ == '__main__':
     params = {}
