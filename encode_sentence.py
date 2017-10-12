@@ -6,6 +6,8 @@ import logging
 import json
 import sys
 import IOUtil
+import torch
+from torch.utils.data import TensorDataset, DataLoader
 
 DATA_PATH = "/home/zxj/Downloads/data"
 GLOVE_PATH = DATA_PATH + "/glove.840B.300d.txt"
@@ -41,4 +43,13 @@ def output_encoding():
     np.save(output_path, setence_embeddings)
 
 if __name__ == '__main__':
-    output_encoding()
+    path = "/Users/zxj/Google 云端硬盘/models_and_sample/all_positive_samples.npy"
+    first = np.load(path)
+    second = np.ones(first.shape[0])
+    X_tensor = torch.FloatTensor(first)
+    y_tensor = torch.LongTensor(second)
+    dataset = TensorDataset(X_tensor, y_tensor)
+    loader = DataLoader(dataset=dataset,batch_size=128,shuffle=False,num_workers=2)
+    for x, y in loader:
+        print("x is  {0}".format(x))
+        print("y is {0}".format(y))

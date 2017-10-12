@@ -4,6 +4,7 @@ import json
 import IOUtil
 import numpy as np
 import re
+from nltk.tokenize import word_tokenize
 
 DATAPATH = "/Users/zxj/Google 云端硬盘/models_and_sample/"
 BRACKETS = re.compile("[\[\]]")
@@ -72,3 +73,17 @@ def main(glove_path, train_path):
     np.save(output_positive, all_positive_samples)
     np.save(output_negative, all_negative_samples)
 
+
+def generate_sentence_embedding_from_glove(glove_dict, sentences):
+    tokenized_sentences = [word_tokenize(sentence) for sentence in sentences]
+    embeddings = [np.mean([get_glove_array(word, glove_dict) for word in words], axis=0) for words in tokenized_sentences]
+    res = np.array(embeddings)
+    print(res.shape)
+
+if __name__ == '__main__':
+    glove_path = DATAPATH + "glove_train_and_test.txt"
+    train_path = DATAPATH + "en-ud-train-samples.txt"
+    glove_list = read_file(glove_path, split_string)
+    glove_dict = {ele[0]: np.fromstring(ele[1], sep=" ") for ele in glove_list}
+    sentences = read_file(train_path, lambda x: json.loads(x)["sentence"])
+    generate_sentence_embedding_from_glove(glove_dict, sentences)
