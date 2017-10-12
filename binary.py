@@ -36,9 +36,6 @@ class BinaryClassifierEval(object):
             return [line.split() for line in f.read().splitlines()]
 
     def run(self, params):
-        enc_input = []
-        # Sort to reduce padding
-        enc_input = np.vstack(enc_input)
 
         logging.info('Generated sentence embeddings')
 
@@ -48,7 +45,7 @@ class BinaryClassifierEval(object):
                              'nhid': self.train["X"].shape[1], 'kfold': params["kfold"]}
 
         clf = KFoldClassifier(train=self.train, test=self.test, config=config_classifier)
-        devacc, testacc = clf.run()
+        devacc, testacc, _ = clf.run()
         logging.debug('Dev acc : {0} Test acc : {1}\n'.format(devacc, testacc))
         return {'devacc': devacc, 'acc': testacc, 'ndev': self.n_samples,
                 'ntest': self.n_samples}
