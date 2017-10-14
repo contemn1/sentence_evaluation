@@ -73,8 +73,3 @@ def output_list(input_list, output_path):
         logging.error("Failed to open file {0}".format(err))
         sys.exit(1)
 
-
-if __name__ == '__main__':
-    path_train = "/Users/zxj/Downloads/ud-treebanks-v2.0/UD_English/en-ud-train.conllu"
-    path_test = "/Users/zxj/Downloads/sentence_evaluation/UD_English/en-ud-dev.conllu"
-    file_to_list(path_test)

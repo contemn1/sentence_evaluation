@@ -10,30 +10,17 @@ Binary classifier and corresponding datasets : MR, CR, SUBJ, MPQA
 '''
 from __future__ import division, unicode_literals
 
-import io
-import os
-import numpy as np
 import logging
 
-from tools.validation import KFoldClassifier
+from tools.new_validation import SplitClassifier
 
 
 class BinaryClassifierEval(object):
-    def __init__(self, train, test, seed=1111):
+    def __init__(self, train, dev, test, seed=1111):
         self.seed = seed
         self.train = train
+        self.dev = dev
         self.test = test
-        self.n_samples = self.train["X"].shape[0]
-
-    def do_prepare(self, params, prepare):
-        # prepare is given the whole text
-        return prepare(params, self.samples)
-        # prepare puts everything it outputs in "params" : params.word2id etc
-        # Those output will be further used by "batcher".
-
-    def loadFile(self, fpath):
-        with io.open(fpath, 'r', encoding='utf-8') as f:
-            return [line.split() for line in f.read().splitlines()]
 
     def run(self, params):
 
@@ -42,11 +29,13 @@ class BinaryClassifierEval(object):
         config_classifier = {'nclasses': 2, 'seed': self.seed,
                              'usepytorch': params['usepytorch'],
                              'classifier': params['classifier'],
-                             'nhid': self.train["X"].shape[1], 'kfold': params["kfold"]}
+                             'dimension': params['dimension'],
+                             'cudaEfficient': True,
+                             'nhid': params["dimension"]}
 
-        clf = KFoldClassifier(train=self.train, test=self.test, config=config_classifier)
+        clf = SplitClassifier(train_loader=self.train, test_loader=self.test,
+                              dev_loader=self.dev, config=config_classifier)
         devacc, testacc, _ = clf.run()
         logging.debug('Dev acc : {0} Test acc : {1}\n'.format(devacc, testacc))
-        return {'devacc': devacc, 'acc': testacc, 'ndev': self.n_samples,
-                'ntest': self.n_samples}
+        return {'dev_acc': devacc, 'test_acc': testacc}
 

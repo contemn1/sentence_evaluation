@@ -49,7 +49,10 @@ if __name__ == '__main__':
     X_tensor = torch.FloatTensor(first)
     y_tensor = torch.LongTensor(second)
     dataset = TensorDataset(X_tensor, y_tensor)
-    loader = DataLoader(dataset=dataset, batch_size=128, shuffle=False, num_workers=2)
+    loader = DataLoader(dataset=dataset, batch_size=128,
+                        shuffle=False,
+                        num_workers=4,
+                        pin_memory=True)
     for x, y in loader:
         print("x is  {0}".format(x))
         print("y is {0}".format(y))
