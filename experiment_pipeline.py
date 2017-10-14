@@ -68,6 +68,8 @@ def classfication(params):
                              shuffle=False, num_workers=4, pin_memory=True)
 
     classifier = BinaryClassifierEval(train_loader, dev_loader, test_loader)
+    res = classifier.run(params)
+    print(res)
 
 if __name__ == '__main__':
     params = {}
