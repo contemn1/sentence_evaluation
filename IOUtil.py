@@ -37,3 +37,27 @@ def get_glove(glove_path, word_dict):
 
 def load_numpy_arraies(file_path):
     return np.load(file_path)
+
+
+def unfold_domain(text_list, keys=frozenset(["positive", "negative"])):
+    sample_list = [[(index, text_dict[key].split(",")) for index, text_dict in enumerate(text_list)] for key in keys]
+
+    all_tuples = []
+    for sub_list in sample_list:
+        for pair in sub_list:
+            new_list = [(pair[0], ele.split("->")) for ele in pair[1]]
+            all_tuples.extend(new_list)
+
+    train_x = [tup for tup in all_tuples if len(tup[1]) > 1]
+    train_y = [0] * len(sample_list[0]) + [1] * len(sample_list[1])
+    return train_x, train_y
+
+
+def output_list_to_file(file_path, output_list, process=lambda x: x):
+    try:
+        with open(file_path, mode="w+") as file:
+            for line in output_list:
+                file.write(process(line))
+                file.write("\n")
+    except IOError as error:
+        logging.error("Failed to open file {0}".format(error))

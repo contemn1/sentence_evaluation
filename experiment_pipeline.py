@@ -1,82 +1,65 @@
-from IOUtil import load_numpy_arraies
 import numpy as np
+import json
 from binary import BinaryClassifierEval
 import torch
-from torch.utils.data import TensorDataset, DataLoader
-
+from torch.utils.data import DataLoader
+from customized_dataset import TextDataset
+from word_dict_test import read_file
+from IOUtil import unfold_domain
+import IOUtil
+import random
 
 DATA_PATH = "/home/zxj/Downloads/data/models/"
 
 
-def read_data(positive_path, negative_path, sampler=None):
-    sample = True if sampler is not None else False
-    data = {"sample": sample}
-    positive_vectors = load_numpy_arraies(positive_path)
-    negative_vectors = load_numpy_arraies(negative_path)
-    x = np.vstack((positive_vectors, negative_vectors))
-    y = np.array([0]*positive_vectors.shape[0] + [1] * negative_vectors.shape[0])
-    data["first"] = (x, y)
-    if sample:
-        train_positive, train_negative = sampler(positive_vectors)
-        dev_positive, dev_negative = sampler(negative_vectors)
-        train_x = np.vstack((train_positive, train_negative))
-        train_y = np.array([0]*train_positive.shape[0] + [1] * train_negative.shape[0])
-        dev_x = np.vstack((dev_positive, dev_negative))
-        dev_y = np.array([0]*dev_positive.shape[0] + [1] * dev_negative.shape[0])
-        data["first"] = (train_x, train_y)
-        data["second"] = (dev_x, dev_y)
+def data_loader_creater(glove_path, embedding_path):
+    def load_dataset(text_path=None, text_data=()):
+        train_set = TextDataset(glove_path=glove_path, embedding_path=embedding_path,
+                                text_path=text_path, text_data=text_data)
+        train_loader = DataLoader(dataset=train_set, batch_size=128,
+                                  shuffle=False, num_workers=4, pin_memory=False)
+        return train_loader
 
-    return data
+    return load_dataset
 
 
 def random_sample(percentage):
     def sample_vectors(vectors):
-        length = vectors.shape[0]
-        indices = np.random.permutation(length)
-        train_length = length*percentage
-        return vectors[indices[:train_length]], vectors[indices[train_length:]]
+        length = len(vectors)
+        random.shuffle(vectors)
+        train_length = int(length*percentage)
+        return vectors[:train_length], vectors[train_length:]
 
     return sample_vectors
 
 
-def dataset_generation(input_data):
-    X, y = input_data
-    X_tensor = torch.FloatTensor(X)
-    y_tensor = torch.LongTensor(y)
-    return TensorDataset(X_tensor, y_tensor)
+def divide_list(input_list):
+    first_column = [element[0] for element in input_list]
+    second_column = [element[1] for element in input_list]
+    return first_column, second_column
 
 
 def classfication(params):
-    train_positive = params["train_positive"]
-    train_negative = params["train_negative"]
-    test_positive = params["test_positive"]
-    test_negative = params["test_negative"]
-    random_sampler = random_sample(0.8)
-    all_data = read_data(train_positive, train_negative, random_sampler)
-    train_data = dataset_generation(all_data["first"])
-    params["dimension"] = all_data["first"][0].shape[1]
+    train_and_dev = read_file(params["train_path"], lambda a: json.loads(a))
+    train_x, train_y = unfold_domain(train_and_dev)
+    train_and_dev = [ele for ele in zip(train_x, train_y)]
+    sampler = random_sample(0.9)
+    loader_factory = data_loader_creater(params["glove_path"], params["train_embedding"])
+    train, dev = sampler(train_and_dev)
+    train_data = loader_factory(text_data=divide_list(train))
+    dev_data = loader_factory(text_data=divide_list(dev))
+    test_data = data_loader_creater(params["glove_path"],
+                                    params["test_embedding"])(text_path=params["test_path"])
 
-    dev_data = dataset_generation(all_data["second"])
-    test_data = dataset_generation(read_data(test_positive, test_negative)["first"])
-    train_loader = DataLoader(dataset=train_data, batch_size=128,
-                              shuffle=False, num_workers=4, pin_memory=True)
-
-    dev_loader = DataLoader(dataset=dev_data, batch_size=128,
-                            shuffle=False, num_workers=4, pin_memory=True)
-
-    test_loader = DataLoader(dataset=test_data, batch_size=128,
-                             shuffle=False, num_workers=4, pin_memory=True)
-
-    classifier = BinaryClassifierEval(train_loader, dev_loader, test_loader)
-    res = classifier.run(params)
-    print(res)
+    for x, y in test_data:
+        print(x, y)
 
 if __name__ == '__main__':
-    params = {}
-    params["train_positive"] = DATA_PATH + "all_positive_samples.npy"
-    params["train_negative"] = DATA_PATH + "all_negative_samples.npy"
-    params["test_positive"] = DATA_PATH + "all_positive_samples_test.npy"
-    params["test_negative"] = DATA_PATH + "all_negative_samples_test.npy"
-    params["usepytorch"] = True
-    params["classifier"] = "MLP"
+    root_path = "/Users/zxj/Google 云端硬盘/models_and_sample/"
+    params = {"train_path": root_path + "en-ud-train-samples.txt",
+              "test_path": root_path + "en-ud-test-samples.txt",
+              "glove_path": root_path + "glove_train_and_test.txt",
+              "train_embedding": root_path + "infer-sent-embeddings-train.npy",
+              "test_embedding": root_path + "infer-sent-embeddings-test.npy"}
+
     classfication(params)
