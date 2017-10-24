@@ -16,8 +16,8 @@ def data_loader_creater(glove_path, embedding_path):
     def load_dataset(text_path=None, text_data=()):
         train_set = TextDataset(glove_path=glove_path, embedding_path=embedding_path,
                                 text_path=text_path, text_data=text_data)
-        train_loader = DataLoader(dataset=train_set, batch_size=128,
-                                  shuffle=False, num_workers=4, pin_memory=False)
+        train_loader = DataLoader(dataset=train_set, batch_size=32,
+                                  shuffle=False, num_workers=4, pin_memory=True)
         return train_loader
 
     return load_dataset
@@ -51,15 +51,20 @@ def classfication(params):
     test_data = data_loader_creater(params["glove_path"],
                                     params["test_embedding"])(text_path=params["test_path"])
 
-    for x, y in test_data:
-        print(x, y)
+    classifier = BinaryClassifierEval(train=train_data, dev=dev_data, test=test_data)
+    res = classifier.run(params=params)
+    print(res)
 
 if __name__ == '__main__':
-    root_path = "/Users/zxj/Google 云端硬盘/models_and_sample/"
-    params = {"train_path": root_path + "en-ud-train-samples.txt",
-              "test_path": root_path + "en-ud-test-samples.txt",
-              "glove_path": root_path + "glove_train_and_test.txt",
-              "train_embedding": root_path + "infer-sent-embeddings-train.npy",
-              "test_embedding": root_path + "infer-sent-embeddings-test.npy"}
+    params = {"train_path": DATA_PATH + "en-ud-train-samples.txt",
+              "test_path": DATA_PATH + "en-ud-test-samples.txt",
+              "glove_path": DATA_PATH + "glove_train_and_test.txt",
+              "train_embedding": DATA_PATH + "infer-sent-embeddings-train.npy",
+              "test_embedding": DATA_PATH + "infer-sent-embeddings-test.npy",
+              "classifier": "MLP",
+              "usepytorch": True,
+              "dimension": 4696,
+              "nepoches": 1,
+              "maxepoch": 10000}
 
     classfication(params)

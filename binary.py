@@ -31,11 +31,13 @@ class BinaryClassifierEval(object):
                              'classifier': params['classifier'],
                              'dimension': params['dimension'],
                              'cudaEfficient': True,
-                             'nhid': params["dimension"]}
+                             'nhid': params["dimension"],
+                             "nepoches": params["nepoches"],
+                             "maxepoch": params["maxepoch"]}
 
         clf = SplitClassifier(train_loader=self.train, test_loader=self.test,
                               dev_loader=self.dev, config=config_classifier)
-        devacc, testacc, _ = clf.run()
+        devacc, testacc = clf.run()
         logging.debug('Dev acc : {0} Test acc : {1}\n'.format(devacc, testacc))
         return {'dev_acc': devacc, 'test_acc': testacc}
 

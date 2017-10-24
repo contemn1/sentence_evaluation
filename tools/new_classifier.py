@@ -48,13 +48,18 @@ class PyTorchClassifier(object):
         while not stop_train and self.nepoch <= self.maxepoch:
             self.trainepoch(train_dataloader, nepoches=self.nepoches)
             accuracy = self.score(dev_dataloader)
+            print("current epoch is {0}, accuracy is {1}, best accuracy is{2}".format(self.nepoch, accuracy, bestaccuracy))
+
             if accuracy > bestaccuracy:
                 bestaccuracy = accuracy
                 bestmodel = copy.deepcopy(self.model)
+
             elif early_stop:
                 if early_stop_count >= 5:
                     stop_train = True
                 early_stop_count += 1
+                print("current epoch is {0}, early stop count is {1}".format(self.nepoch, early_stop_count))
+
         self.model = bestmodel
         return bestaccuracy
 
@@ -83,7 +88,9 @@ class PyTorchClassifier(object):
     def score(self, dev_dataloader):
         self.model.eval()
         correct = 0
+        number_of_data = 0
         for Xbatch, ybatch in dev_dataloader:
+            number_of_data += Xbatch.size()[0]
             if self.use_cuda:
                 Xbatch = Xbatch.cuda()
                 ybatch = ybatch.cuda()
@@ -91,8 +98,8 @@ class PyTorchClassifier(object):
 
             output = self.model(Xbatch)
             pred = output.data.max(1)[1]
-            correct += pred.long().eq(ybatch.data.long()).sum()
-        accuracy = 1.0 * correct / len(dev_dataloader)
+            correct += pred.long().eq(ybatch).sum()
+        accuracy = (1.0 * correct) / number_of_data
         return accuracy
 
     def predict(self, dev_loader):
@@ -157,7 +164,7 @@ class MLP(PyTorchClassifier):
             nn.Linear(self.inputdim, self.hiddendim),
             # TODO : add parameter p for dropout
             nn.ReLU(),
-            nn.Dropout(p=0.8),
+            nn.Dropout(p=0.2),
             nn.Linear(self.hiddendim, self.nclasses),
             nn.Softmax()
         ).cuda()

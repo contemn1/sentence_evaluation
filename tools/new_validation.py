@@ -28,7 +28,7 @@ class SplitClassifier(object):
         self.modelname = 'sklearn-LogReg' if not config['usepytorch'] else \
             'pytorch-' + config['classifier']
         self.nepoches = None if 'nepoches' not in config else \
-            config['nepoches']
+              config['nepoches']
         self.maxepoch = None if 'maxepoch' not in config else \
             config['maxepoch']
         self.noreg = False if 'noreg' not in config else config['noreg']
@@ -43,6 +43,7 @@ class SplitClassifier(object):
         scores = []
         for reg in regs:
             clf = self.create_classifier(reg)
+            clf.fit(train_dataloader=self.train_loader, dev_dataloader=self.dev_loader)
             scores.append(round(100*clf.score(self.dev_loader), 2))
         logging.info([('reg:'+str(regs[idx]), scores[idx])
                       for idx in range(len(scores))])
@@ -53,6 +54,7 @@ class SplitClassifier(object):
             {1}'.format(optreg, devaccuracy))
 
         clf = self.create_classifier(optreg)
+        clf.fit(train_dataloader=self.train_loader, dev_dataloader=self.dev_loader)
         testaccuracy = clf.score(self.test_loader)
         testaccuracy = round(100*testaccuracy, 2)
         return devaccuracy, testaccuracy
