@@ -37,25 +37,26 @@ def random_sample(percentage):
     return sample_vectors
 
 
-def divide_list(input_list):
-    first_column = [element[0] for element in input_list]
-    second_column = [element[1] for element in input_list]
-    return first_column, second_column
+def list_to_tuple(input_list):
+    return input_list[0], [input_list[1], input_list[2]]
 
 
-def classfication(params):
-    train_and_dev = read_file(params["train_path"], lambda a: json.loads(a))
-    train_x, train_y = unfold_domain(train_and_dev)
-    train_and_dev = [ele for ele in zip(train_x, train_y)]
-    sampler = random_sample(0.9)
+def read_and_preprocess(path):
+    data = read_file(path, lambda a: a.split("\t"))
+    data_x = [list_to_tuple(ele) for ele in data]
+    data_y = [ele[3] for ele in data]
+    return data_x, data_y
+
+
+def classification(params):
     batch_size = 128 if "batch_size" not in params else params["batch_size"]
     loader_factory = data_loader_creater(params["glove_path"], params["train_embedding"])
-    train, dev = sampler(train_and_dev)
-    train_data = loader_factory(text_data=divide_list(train),
+
+    train_data = loader_factory(text_data=read_and_preprocess(params["train_path"]),
                                 batch_size=batch_size,
                                 pin_memory=params["cudaEfficient"])
 
-    dev_data = loader_factory(text_data=divide_list(dev),
+    dev_data = loader_factory(text_data=read_and_preprocess(params["dev_path"]),
                               batch_size=batch_size,
                               pin_memory=params["cudaEfficient"]
                               )
@@ -72,3 +73,4 @@ def classfication(params):
 
 if __name__ == '__main__':
     params = IOUtil.read_configs("/Users/zxj/Google 云端硬盘/evaluation_parameters.ini")
+    classification(params)

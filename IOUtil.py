@@ -57,7 +57,7 @@ def unfold_domain(text_list, keys=frozenset(["positive", "negative"])):
 
 def output_list_to_file(file_path, output_list, process=lambda x: x):
     try:
-        with open(file_path, mode="w+") as file:
+        with open(file_path, mode="w+", encoding="utf-8") as file:
             for line in output_list:
                 file.write(process(line))
                 file.write("\n")
