@@ -30,7 +30,7 @@ class BinaryClassifierEval(object):
                              'usepytorch': params['usepytorch'],
                              'classifier': params['classifier'],
                              'dimension': params['dimension'],
-                             'cudaEfficient': True,
+                             'cudaEfficient': params['cudaEfficient'],
                              'nhid': params["dimension"],
                              "nepoches": params["nepoches"],
                              "maxepoch": params["maxepoch"]}

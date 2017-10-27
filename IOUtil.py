@@ -1,8 +1,10 @@
+# -*- coding: utf-8 -*-
+
 import sys
 import logging
 import json
 import numpy as np
-
+import configparser
 
 def get_word_dict(sentences, tokenize=True):
     # create vocab of words
@@ -61,3 +63,23 @@ def output_list_to_file(file_path, output_list, process=lambda x: x):
                 file.write("\n")
     except IOError as error:
         logging.error("Failed to open file {0}".format(error))
+
+
+def read_configs(config_path):
+    config = configparser.ConfigParser()
+    config.optionxform = str
+    config.read(config_path, encoding="utf-8")
+    config_dict = {key: string_to_attributes(value) for key, value in config["arguments"].items()}
+    return config_dict
+
+
+def string_to_attributes(input_string):
+    if input_string.lower() in {"yes", "true"}:
+        return True
+    if input_string.lower() in {"no", "false"}:
+        return False
+
+    if input_string.isdigit():
+        return int(input_string)
+
+    return input_string
