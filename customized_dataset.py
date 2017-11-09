@@ -22,7 +22,7 @@ class TextDataset(Dataset):
             self.data_x, self.data_y = unfold_domain(read_file(text_path, lambda x: json.loads(x)))
         else:
             self.data_x, self.data_y = text_data
-
+        self.dimension = None
         self.sentence_embeddings = np.load(embedding_path)
 
     def __len__(self):
@@ -34,7 +34,14 @@ class TextDataset(Dataset):
         word_embeddings = np.hstack((get_glove_array(words[0], self.glove_dict),
                                      get_glove_array(words[1], self.glove_dict)))
         all_embeddings = np.hstack((sentence_embedding, word_embeddings))
+        if not self.dimension:
+            self.dimension = all_embeddings.size
         x_tensor = torch.FloatTensor(all_embeddings)
         return x_tensor, self.data_y[index]
 
+    def data_dimension(self):
+        if not self.dimension:
+            _ = self.__getitem__(0)
+
+        return self.dimension
 

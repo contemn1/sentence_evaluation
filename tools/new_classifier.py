@@ -28,7 +28,6 @@ class PyTorchClassifier(object):
         np.random.seed(seed)
         torch.manual_seed(seed)
         torch.cuda.manual_seed(seed)
-
         self.inputdim = inputdim
         self.nclasses = nclasses
         self.l2reg = l2reg
@@ -72,8 +71,11 @@ class PyTorchClassifier(object):
                 if self.use_cuda:
                     Xbatch = Xbatch.cuda()
                     ybatch = ybatch.cuda()
+
                 Xbatch = Variable(Xbatch)
                 ybatch = Variable(ybatch)
+
+
                 output = self.model(Xbatch)
                 # loss
                 loss = self.loss_fn(output, ybatch)
@@ -164,7 +166,7 @@ class MLP(PyTorchClassifier):
             nn.Linear(self.inputdim, self.hiddendim),
             # TODO : add parameter p for dropout
             nn.ReLU(),
-            nn.Dropout(p=0.2),
+            nn.Dropout(p=0.8),
             nn.Linear(self.hiddendim, self.nclasses),
             nn.Softmax()
         ).cuda()

@@ -34,6 +34,7 @@ class SplitClassifier(object):
         self.noreg = False if 'noreg' not in config else config['noreg']
 
     def run(self):
+        print(self.noreg)
         logging.info('Training {0} with standard validation..'
                      .format(self.modelname))
         regs = [10**t for t in range(-5, -1)] if self.usepytorch else \
