@@ -73,3 +73,26 @@ def output_list(input_list, output_path):
         logging.error("Failed to open file {0}".format(err))
         sys.exit(1)
 
+
+def refined_file_to_list(file_path):
+    result = []
+    try:
+        with open(file_path, encoding="utf8") as file:
+            contents = file.read().split("\n\n")
+            for sentence in contents:
+                lines = sentence.split("\n")
+                lines = [line for line in lines if not (SENT_ID in line or DOC_ID in line)]
+                new_lines = [ele.split("\t") for ele in lines[1:]]
+                new_lines = [arr[1] for arr in new_lines if arr[7] == "root"]
+                if new_lines:
+                    result.append([lines[0], new_lines[0]])
+            return result
+
+    except IOError as err:
+        logging.error("Failed to open file {0}".format(err))
+        sys.exit(1)
+
+if __name__ == '__main__':
+    result = refined_file_to_list("/Users/zxj/Downloads/ud-treebanks-v2.0/UD_English/en-ud-train.conllu")
+    for ele in result:
+        print (ele)

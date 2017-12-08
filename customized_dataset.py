@@ -31,8 +31,8 @@ class TextDataset(Dataset):
     def __getitem__(self, index):
         index, words = self.data_x[index]
         sentence_embedding = self.sentence_embeddings[index]
-        word_embeddings = np.hstack((get_glove_array(words[0], self.glove_dict),
-                                     get_glove_array(words[1], self.glove_dict)))
+        new_words = [get_glove_array(word, self.glove_dict) for word in words if word]
+        word_embeddings = np.hstack(new_words)
         all_embeddings = np.hstack((sentence_embedding, word_embeddings))
         if not self.dimension:
             self.dimension = all_embeddings.size
