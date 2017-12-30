@@ -24,49 +24,33 @@ def load_sentences(file_path):
         sys.exit(1)
 
 
-def refined_file_to_list(file_path):
-    result = []
+def read_file(file_path, preprocess=lambda x: x):
     try:
         with open(file_path, encoding="utf8") as file:
             for sentence in file.readlines():
-                result.append(sentence.rstrip())
-            return result
+                yield (preprocess(sentence))
 
     except IOError as err:
         logging.error("Failed to open file {0}".format(err))
         sys.exit(1)
 
-
-def encoding_setences(model_path, sentence_list):
+def resume_model(model_path):
     model = torch.load(model_path, map_location=lambda storage, loc: storage)  #type: BLSTMEncoder
     glove_path = "/Users/zxj/Downloads/glove.840B.300d.txt"
     model.set_glove_path(glove_path)
     model.build_vocab_k_words(K=100000)
+    return model
 
+def encoding_setences(model_path, sentence_list):
+    model = resume_model(model_path)  #type: BLSTMEncoder
     embeddings = model.encode(sentence_list, bsize=128, tokenize=True, verbose=True)
     return embeddings
-
 
 def output_encoding():
     model_path = DATA_PATH + "/infersent.allnli.pickle"
     setence_embeddings = encoding_setences(model_path)
     output_path = DATA_PATH + "/infer-sent-embeddings-test"
     np.save(output_path, setence_embeddings)
-
-def test():
-    path = "/Users/zxj/Google 云端硬盘/models_and_sample/all_positive_samples.npy"
-    first = np.load(path)
-    second = np.ones(first.shape[0])
-    X_tensor = torch.FloatTensor(first)
-    y_tensor = torch.LongTensor(second)
-    dataset = TensorDataset(X_tensor, y_tensor)
-    loader = DataLoader(dataset=dataset, batch_size=128,
-                        shuffle=False,
-                        num_workers=4,
-                        pin_memory=True)
-    for x, y in loader:
-        print("x is  {0}".format(x))
-        print("y is {0}".format(y))
 
 
 def calculate_pairwise_similarity(embedding_path):
@@ -79,7 +63,7 @@ def calculate_pairwise_similarity(embedding_path):
 
 
 def sentences_unfold(file_path):
-    sent_list = refined_file_to_list(file_path)
+    sent_list = read_file(file_path)
     sent_list = [ele.split("\002") for ele in sent_list]
     sent_list = [arr for arr in sent_list if len(arr) == 3]
     sent_list = [ele for arr in sent_list for ele in arr]
@@ -87,4 +71,18 @@ def sentences_unfold(file_path):
 
 
 if __name__ == '__main__':
-    calculate_pairwise_similarity("/Users/zxj/PycharmProjects/sentence_evaluation/factual_embeddings.npy")
+    sick_path = "/Users/zxj/Downloads/SICK/SICK.txt"
+    file_list = read_file(sick_path)
+    file_list = (ele.split("\t")[1:7] for ele in file_list if not ele.startswith("pair_ID"))
+    file_list = ([ele[0], ele[1], ele[3]] for ele in file_list if ele[2] == "ENTAILMENT")
+    file_list = list(file_list)
+    first = [ele[0] for ele in file_list]
+    second = [ele[1] for ele in file_list]
+    third = [ele[2] for ele in file_list]
+    model_path = "/Users/zxj/Downloads/sentence_evaluation/InferSent/encoder/infersent.allnli.pickle"
+    model = resume_model(model_path)
+    first_emb = model.encode(first, bsize=128, tokenize=True, verbose=True)
+    second_emb = model.encode(second, bsize=128, tokenize=True, verbose=True)
+    res = cosine_similarity(first_emb, second_emb).diagonal().tolist()
+    for ele in zip(res, third):
+        print(str(ele[0]) + "\t" + ele[1])

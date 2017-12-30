@@ -92,6 +92,7 @@ def refined_file_to_list(file_path):
         logging.error("Failed to open file {0}".format(err))
         sys.exit(1)
 
+
 if __name__ == '__main__':
     result = refined_file_to_list("/Users/zxj/Downloads/ud-treebanks-v2.0/UD_English/en-ud-train.conllu")
     for ele in result:

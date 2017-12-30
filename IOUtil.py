@@ -5,6 +5,10 @@ import logging
 import json
 import numpy as np
 import configparser
+import re
+from nltk.tokenize import sent_tokenize
+
+THINKREGEX = re.compile(" says? | said | knows? | knew | thinks? | thought ")
 
 def get_word_dict(sentences, tokenize=True):
     # create vocab of words
@@ -33,6 +37,16 @@ def get_glove(glove_path, word_dict):
 
     print('Found {0}(/{1}) words with glove vectors'.format(
                     len(word_vec), len(word_dict)))
+
+    return word_vec
+
+
+def get_glove_dict(glove_path):
+    word_vec = {}
+    with open(glove_path, encoding="utf8") as f:
+        for line in f:
+            word, vec = line.split(' ', 1)
+            word_vec[word] = np.fromstring(vec.strip(), sep=' ')
 
     return word_vec
 
@@ -83,3 +97,20 @@ def string_to_attributes(input_string):
         return int(input_string)
 
     return input_string
+
+
+def read_text_file_with_think(input_path):
+    sentecnes = []
+    try:
+        with open(input_path, encoding="utf-8") as f:
+            for line in f:
+                results = sent_tokenize(line)
+                sents = [ele1 for ele1 in results if THINKREGEX.search(ele1)]
+                for ele in sents:
+                    if len(ele.split(" ")) < 30:
+                        print(ele)
+
+            return sentecnes
+    except IOError as err:
+        print("Failed to read file {0}".format(err))
+        return sentecnes
