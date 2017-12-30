@@ -1,13 +1,9 @@
-from random import randint
 from models import BLSTMEncoder
 import numpy as np
-import torch
 import logging
 import json
 import sys
-import IOUtil
 import torch
-from torch.utils.data import TensorDataset, DataLoader
 from sklearn.metrics.pairwise import cosine_similarity
 
 DATA_PATH = "/home/zxj/Downloads/data"
@@ -34,6 +30,7 @@ def read_file(file_path, preprocess=lambda x: x):
         logging.error("Failed to open file {0}".format(err))
         sys.exit(1)
 
+
 def resume_model(model_path):
     model = torch.load(model_path, map_location=lambda storage, loc: storage)  #type: BLSTMEncoder
     glove_path = "/Users/zxj/Downloads/glove.840B.300d.txt"
@@ -41,10 +38,12 @@ def resume_model(model_path):
     model.build_vocab_k_words(K=100000)
     return model
 
+
 def encoding_setences(model_path, sentence_list):
     model = resume_model(model_path)  #type: BLSTMEncoder
     embeddings = model.encode(sentence_list, bsize=128, tokenize=True, verbose=True)
     return embeddings
+
 
 def output_encoding():
     model_path = DATA_PATH + "/infersent.allnli.pickle"
