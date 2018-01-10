@@ -31,9 +31,10 @@ def read_file(file_path, preprocess=lambda x: x):
         sys.exit(1)
 
 
-def resume_model(model_path):
-    model = torch.load(model_path, map_location=lambda storage, loc: storage)  #type: BLSTMEncoder
-    glove_path = "/Users/zxj/Downloads/glove.840B.300d.txt"
+def resume_model(model_path, glove_path=GLOVE_PATH, use_cuda=True):
+    location_function = None if use_cuda else lambda storage, loc: storage
+    model = torch.load(model_path, map_location=location_function)
+    #type: BLSTMEncoder
     model.set_glove_path(glove_path)
     model.build_vocab_k_words(K=100000)
     return model
