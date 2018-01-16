@@ -5,6 +5,9 @@ import json
 import sys
 import torch
 from sklearn.metrics.pairwise import cosine_similarity
+from IOUtil import get_word_dict
+from IOUtil import get_glove
+from nltk.tokenize import word_tokenize
 
 DATA_PATH = "/home/zxj/Downloads/data"
 GLOVE_PATH = DATA_PATH + "/glove.840B.300d.txt"
@@ -94,5 +97,10 @@ if __name__ == '__main__':
     model_path = "/Users/zxj/Downloads/sentence_evaluation/InferSent/encoder/infersent.allnli.pickle"
     glove_path = "/Users/zxj/Downloads/glove.840B.300d.txt"
     sentences = sentences_unfold(file_path)
-    embeddings = encoding_setences(model_path=model_path, glove_path=glove_path, sentence_list=sentences)
-    embeddings = calculate_pairwise_similarity(embeddings)
+    print(sentences[0])
+    word_dict = get_word_dict(sentences)
+    glove_dict = get_glove(GLOVE_PATH, word_dict)
+    sentences = [word_tokenize(sent) for sent in sentences]
+    sentences = [np.mean([glove_dict[word] for word in sent if word in glove_dict], axis=0) for sent in sentences]
+    sentences = np.array(sentences)
+    calculate_pairwise_similarity(sentences)

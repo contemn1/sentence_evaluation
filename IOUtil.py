@@ -7,6 +7,7 @@ import numpy as np
 import configparser
 import re
 from nltk.tokenize import sent_tokenize
+from gensim.models import KeyedVectors
 
 THINKREGEX = re.compile(" says? | said | knows? | knew | thinks? | thought ")
 
@@ -20,7 +21,7 @@ def get_word_dict(sentences, tokenize=True):
     for sent in sentences:
         for word in sent:
             if word not in word_dict:
-                word_dict[word.lower()] = ''
+                word_dict[word] = ''
     word_dict['<s>'] = ''
     word_dict['</s>'] = ''
     return word_dict
@@ -32,8 +33,8 @@ def get_glove(glove_path, word_dict):
     with open(glove_path, encoding="utf8") as f:
         for line in f:
             word, vec = line.split(' ', 1)
-            if word.lower() in word_dict:
-                word_vec[word.lower()] = vec
+            if word in word_dict:
+                word_vec[word] = np.fromstring(vec.strip(), sep=' ')
 
     print('Found {0}(/{1}) words with glove vectors'.format(
                     len(word_vec), len(word_dict)))
@@ -87,6 +88,10 @@ def read_configs(config_path):
     return config_dict
 
 
+def load_pretrained_word2vec(model_path, binary=True):
+    return KeyedVectors.load_word2vec_format(fname=model_path, binary=binary)
+
+
 def string_to_attributes(input_string):
     if input_string.lower() in {"yes", "true"}:
         return True
@@ -114,3 +119,10 @@ def read_text_file_with_think(input_path):
     except IOError as err:
         print("Failed to read file {0}".format(err))
         return sentecnes
+
+if __name__ == '__main__':
+    data_dir = "/home/zxj/Downloads/data"
+    model_path = data_dir + "/GoogleNews-vectors-negative300.bin"
+    model = load_pretrained_word2vec(model_path)
+    for ele in model.most_similar(positive=['perform'], topn=20):
+        print(ele)
