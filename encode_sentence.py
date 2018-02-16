@@ -8,6 +8,8 @@ from sklearn.metrics.pairwise import cosine_similarity
 from IOUtil import get_word_dict
 from IOUtil import get_glove
 from nltk.tokenize import word_tokenize
+from functools import reduce
+import spacy
 
 DATA_PATH = "/home/zxj/Downloads/data"
 GLOVE_PATH = DATA_PATH + "/glove.840B.300d.txt"
@@ -73,7 +75,7 @@ def sentences_unfold(file_path, delimiter="\001", predicate=lambda x: len(x) == 
 def load_sick(sick_path="/Users/zxj/Downloads/SICK/SICK.txt"):
     file_list = read_file(sick_path)
     file_list = (ele.split("\t")[1:7] for ele in file_list if not ele.startswith("pair_ID"))
-    file_list = ([ele[0], ele[1], ele[3]] for ele in file_list if ele[2] == "ENTAILMENT")
+    file_list = ([ele[0], ele[1], ele[2]] for ele in file_list)
     return file_list
 
 
@@ -100,7 +102,29 @@ def get_sentence_embedding_from_glove(sentences, glove_path=GLOVE_PATH):
     sentences = np.array(sentences)
     return sentences
 
-if __name__ == '__main__':
+
+def sent_no_clause(language_model, sentence):
+    doc = language_model(sentence)
+    clause_set = {"ccomp", "csubj", "csubjpass", "xcomp"}
+    no_clause = True
+    for token in doc:
+        if token.dep_ == 'ROOT':
+            children_dep = [child.dep_ for child in token.children]
+            no_clause = reduce(lambda x, y: x and not y in clause_set,
+                               children_dep, no_clause)
+    return no_clause
+
+
+def filter_sick_dataset():
+    sick_list =load_sick()
+    language_model = spacy.load('en')
+    filtered_sick_list = filter(lambda arr: sent_no_clause(language_model, arr[0])
+                                and sent_no_clause(language_model, arr[1]),
+                                sick_list)
+    for ele in filtered_sick_list:
+        print(ele)
+
+def pipeline():
     file_path = "inversion_tuple.txt"
     model_path = "/home/zxj/Downloads/data/infersent.allnli.pickle"
     sentences = list(read_file(file_path, preprocess=lambda x: x.split("\001")))
@@ -112,3 +136,9 @@ if __name__ == '__main__':
     res = cosine_similarity(first_emb, second_emb).diagonal().tolist()
     for ele in res:
         print(ele)
+
+
+
+if __name__ == '__main__':
+    sent1 = ''
+    sent_no_clause(spacy.load('en'), )
