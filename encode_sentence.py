@@ -5,6 +5,9 @@ import json
 import sys
 import torch
 from sklearn.metrics.pairwise import cosine_similarity
+from IOUtil import get_word_dict
+from IOUtil import get_glove
+from nltk.tokenize import word_tokenize
 
 DATA_PATH = "/home/zxj/Downloads/data"
 GLOVE_PATH = DATA_PATH + "/glove.840B.300d.txt"
@@ -52,17 +55,17 @@ def output_encoding():
     np.save(output_path, setence_embeddings)
 
 
-def calculate_pairwise_similarity(embd):
-    embd = embd.reshape((-1, 3, embd.shape[1]))
+def calculate_pairwise_similarity(embd, group_size=3):
+    embd = embd.reshape((-1, group_size, embd.shape[1]))
     for ele in embd:
         res_mat = cosine_similarity(ele)
         res_need = [str(res_mat[0][1].item()), str(res_mat[1][2].item()), str(res_mat[0][2].item())]
         print("\t".join(res_need))
 
 
-def sentences_unfold(file_path, delimiter="\001"):
+def sentences_unfold(file_path, delimiter="\001", predicate=lambda x: len(x) == 3):
     sent_list = read_file(file_path, preprocess=lambda ele: ele.split(delimiter))
-    sent_list = [arr for arr in sent_list if len(arr) == 3]
+    sent_list = [arr for arr in sent_list if predicate(arr)]
     sent_list = [ele for arr in sent_list for ele in arr]
     return sent_list
 
@@ -89,10 +92,23 @@ def encode_sick(use_cuda):
         print(str(ele[0]) + "\t" + ele[1])
 
 
+def get_sentence_embedding_from_glove(sentences, glove_path=GLOVE_PATH):
+    word_dict = get_word_dict(sentences)
+    glove_dict = get_glove(glove_path, word_dict)
+    sentences = [word_tokenize(sent) for sent in sentences]
+    sentences = [np.mean([glove_dict[word] for word in sent if word in glove_dict], axis=0) for sent in sentences]
+    sentences = np.array(sentences)
+    return sentences
+
 if __name__ == '__main__':
-    file_path = "result.txt"
-    model_path = "/Users/zxj/Downloads/sentence_evaluation/InferSent/encoder/infersent.allnli.pickle"
-    glove_path = "/Users/zxj/Downloads/glove.840B.300d.txt"
-    sentences = sentences_unfold(file_path)
-    embeddings = encoding_setences(model_path=model_path, glove_path=glove_path, sentence_list=sentences)
-    embeddings = calculate_pairwise_similarity(embeddings)
+    file_path = "inversion_tuple.txt"
+    model_path = "/home/zxj/Downloads/data/infersent.allnli.pickle"
+    sentences = list(read_file(file_path, preprocess=lambda x: x.split("\001")))
+    first = [tup[0] for tup in sentences]
+    second = [tup[1].strip() for tup in sentences]
+    model = resume_model(model_path, use_cuda=True)
+    first_emb = model.encode(first, bsize=128, tokenize=True, verbose=True)
+    second_emb = model.encode(second, bsize=128, tokenize=True, verbose=False)
+    res = cosine_similarity(first_emb, second_emb).diagonal().tolist()
+    for ele in res:
+        print(ele)
