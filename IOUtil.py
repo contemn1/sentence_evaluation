@@ -10,6 +10,7 @@ from nltk.tokenize import sent_tokenize
 
 THINKREGEX = re.compile(" says? | said | knows? | knew | thinks? | thought ")
 
+
 def get_word_dict(sentences, tokenize=True):
     # create vocab of words
     word_dict = {}
