@@ -138,7 +138,23 @@ def pipeline():
         print(ele)
 
 
+def take_two(sentence):
+    triple = sentence.split("\t")
+    return triple[0], triple[2]
+
+
+def filter_passive(file_path):
+
+    sent_dict = {}
+    passive_tuples = read_file(file_path, preprocess=take_two)
+    for ele in passive_tuples:
+        active, passive = ele
+        if active not in sent_dict:
+            sent_dict[active] = passive
+
+    for key, value in sent_dict.items():
+        print(key + "\t" + value)
+
 
 if __name__ == '__main__':
-    sent1 = ''
-    sent_no_clause(spacy.load('en'), )
+    filter_passive("/Users/zxj/PycharmProjects/sentence_evaluation/dataset/passiveSentence-unrevised.txt")
