@@ -124,6 +124,7 @@ def filter_sick_dataset():
     for ele in filtered_sick_list:
         print(ele)
 
+
 def pipeline():
     file_path = "inversion_tuple.txt"
     model_path = "/home/zxj/Downloads/data/infersent.allnli.pickle"
