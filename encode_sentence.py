@@ -157,5 +157,10 @@ def filter_passive(file_path):
         print(key + "\t" + value)
 
 
+def process_snli_json(snli_json):
+    snli_dict = json.loads(snli_json)
+    return [snli_dict["sentence1"], snli_dict["sentence2"]]
+
+
 if __name__ == '__main__':
-    filter_passive("/Users/zxj/PycharmProjects/sentence_evaluation/dataset/passiveSentence-unrevised.txt")
+    model = spacy.load("en")
