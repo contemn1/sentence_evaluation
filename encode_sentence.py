@@ -162,4 +162,8 @@ def process_snli_json(snli_json):
 
 
 if __name__ == '__main__':
-    model = spacy.load("en")
+    triple_path = "/home/zxj/Documents/setence_evaluation/dataset/"
+    triplets = sentences_unfold(file_path=triple_path + "triplet_active_passive.txt", delimiter="\t")
+    triplets = [ele.strip() for ele in triplets]
+    embeddings = get_sentence_embedding_from_glove(triplets)
+    calculate_pairwise_similarity(embeddings)
