@@ -1,11 +1,15 @@
-from encode_sentence import read_file
 import re
 import spacy
-from encode_sentence import read_file
 import random
+import numpy as np
+from typing import Iterator
+
+from encode_sentence import read_file
+from encode_sentence import load_sick
 
 NO_PATTERN = re.compile("No")
 CURRENT_PATTERN = re.compile("is|are|am")
+negation = re.compile("not|n\'t")
 
 
 def negate_quantifier(input_sent: str):
@@ -62,7 +66,8 @@ def extrac_verb_phase(language_model, sentence):
 
 def generate_verb_phases():
     language_model = spacy.load('en')
-    sents = read_file("test2.txt", preprocess=lambda x: extrac_verb_phase(language_model, x))
+    sents = read_file("test2.txt",
+                      preprocess=lambda x: extrac_verb_phase(language_model, x))
     sents = (ele for ele in sents if len(ele.split(" ")) > 1)
     for ele in sents:
         print(ele.strip())
@@ -128,14 +133,56 @@ def complicate_triple(names_list, verbs_list, phase_list, times):
             index_set.clear()
 
 
+def equal_distance(str1, str2):
+    if str1 == str2:
+        return 0
+    else:
+        return 1
+
+
+def levenshtein(sent1, sent2, str_distance=equal_distance):
+    if len(sent1) < len(sent2):
+        return levenshtein(sent2, sent1)
+
+    # len(s1) >= len(s2)
+    if len(sent2) == 0:
+        return len(sent1)
+
+    previous_row = range(len(sent2) + 1)
+    for i, c1 in enumerate(sent1):
+        current_row = [i + 1]
+        for j, c2 in enumerate(sent2):
+            insertions = previous_row[
+                             j + 1] + 1  # j+1 instead of j since previous_row and current_row are one character longer
+            deletions = current_row[j] + 1  # than s2
+            substitutions = previous_row[j] + str_distance(c1, c2)
+            current_row.append(min(insertions, deletions, substitutions))
+        previous_row = current_row
+
+    return previous_row[-1]
+
+
+def select_similar_sentence(sents: Iterator[str]):
+    for arr in sents:
+        if negation.search(arr[0]) or negation.search(arr[1]):
+            continue
+
+        first = arr[0].split(" ")
+        second = arr[1].split(" ")
+        tag = arr[2]
+        dist = levenshtein(first, second)
+        similarity = 1 - dist / ((len(first) + len(second)) / 2.0)
+        if tag == "CONTRADICTION" and (dist == 1 or similarity > 0.85):
+            print("\t".join(arr[:-1]))
+
+
 if __name__ == '__main__':
-    person_names = list(read_file("/Users/zxj/Desktop/names_no_dup.txt",
-                             lambda x: (x[0] + x[1:].lower()).strip()))
-
-    verbs = list(read_file("/Users/zxj/Desktop/verbs", lambda x: x.strip()))
-    first = verbs[:4]
-    middle = verbs[4:10]
-    verb_phases = list(read_file("/Users/zxj/PycharmProjects/sentence_evaluation/verb_phases_select.txt",
-                            lambda x: x.strip()))
-
-    complicate_triple(person_names, middle, verb_phases, 30)
+    file_path = "/Users/zxj/Google 云端硬盘/experiment-results/similar_sentences_new.txt"
+    sent_tuple = read_file(file_path, lambda x: x.strip().split("\t"))
+    fixed_index = 3
+    for arr in sent_tuple:
+        first_sent = arr[0]
+        first_arr = first_sent.split(" ")
+        reversed_first = " ".join(first_arr[fixed_index:]) + " ".join(first_arr[:fixed_index])
+        arr.append(reversed_first)
+        print("\t".join(arr).strip())
