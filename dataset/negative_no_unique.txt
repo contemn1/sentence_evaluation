@@ -28,7 +28,7 @@ A man is performing a trick on a green bicycle There is no man performing a tri
 A man dressed in black is riding a bike There is no man dressed in black riding a bikeA man dressed in black is not riding a bike
 A boy is holding a squirt gun There is no boy holding a squirt gunA boy is not holding a squirt gun
 A child is holding a squirt gun There is no child holding a squirt gunA child is not holding a squirt gun
-A climbing boy rescues the fearful cat from over the wall No climbing boy rescues the fearful cat from over the wallA climbing boy rescues the fearful cat from over the wall
+A climbing boy rescues the fearful cat from over the wall No climbing boy rescues the fearful cat from over the wallA climbing boy donesn't rescue the fearful cat from over the wall
 A dad is launching his daughter into a swimming pool There is no dad launching h daughter into a swimming poolA dad is not launching his not daughter into a swimming pool
 A father is launching the daughter in a swimming pool There is no father launching the daughter in a swimming poolA father is not launching the daughter in a swimming pool
 A kid swimming in the ocean is tossing a coin into the pool, near the man There is no kid swimming in the ocean tossing a coin into the pool, near the manA kid swimming in the ocean is not tossing a coin into the pool, near the man

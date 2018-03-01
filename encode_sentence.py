@@ -79,13 +79,12 @@ def load_sick(sick_path="/Users/zxj/Downloads/SICK/SICK.txt"):
     return file_list
 
 
-def encode_sick(use_cuda):
+def encode_sick(use_cuda, model_path):
     file_list = load_sick()
     file_list = list(file_list)
     first = [ele[0] for ele in file_list]
     second = [ele[1] for ele in file_list]
     third = [ele[2] for ele in file_list]
-    model_path = "/Users/zxj/Downloads/sentence_evaluation/InferSent/encoder/infersent.allnli.pickle"
     model = resume_model(model_path, use_cuda=use_cuda)
     first_emb = model.encode(first, bsize=128, tokenize=True, verbose=True)
     second_emb = model.encode(second, bsize=128, tokenize=True, verbose=False)
@@ -163,4 +162,8 @@ def process_snli_json(snli_json):
 
 
 if __name__ == '__main__':
-    model = spacy.load("en")
+    triple_path = "/home/zxj/Documents/setence_evaluation/dataset/"
+    triplets = sentences_unfold(file_path=triple_path + "triplet_active_passive.txt", delimiter="\t")
+    triplets = [ele.strip() for ele in triplets]
+    embeddings = get_sentence_embedding_from_glove(triplets)
+    calculate_pairwise_similarity(embeddings)
