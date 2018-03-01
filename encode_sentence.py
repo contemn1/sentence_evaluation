@@ -49,14 +49,6 @@ def encoding_setences(model_path, glove_path, sentence_list, use_cuda=False) -> 
     embeddings = model.encode(sentence_list, bsize=128, tokenize=True, verbose=True)
     return embeddings
 
-
-def output_encoding():
-    model_path = DATA_PATH + "/infersent.allnli.pickle"
-    setence_embeddings = encoding_setences(model_path)
-    output_path = DATA_PATH + "/infer-sent-embeddings-test"
-    np.save(output_path, setence_embeddings)
-
-
 def calculate_pairwise_similarity(embd, group_size=3):
     embd = embd.reshape((-1, group_size, embd.shape[1]))
     for ele in embd:
@@ -93,13 +85,24 @@ def encode_sick(use_cuda, model_path):
         print(str(ele[0]) + "\t" + ele[1])
 
 
-def get_sentence_embedding_from_glove(sentences, glove_path=GLOVE_PATH):
-    word_dict = get_word_dict(sentences)
-    glove_dict = get_glove(glove_path, word_dict)
-    sentences = [word_tokenize(sent) for sent in sentences]
-    sentences = [np.mean([glove_dict[word] for word in sent if word in glove_dict], axis=0) for sent in sentences]
-    sentences = np.array(sentences)
-    return sentences
+def get_embedding_from_glove(glove_path=GLOVE_PATH):
+    def get_embedding(sentences):
+        word_dict = get_word_dict(sentences)
+        glove_dict = get_glove(glove_path, word_dict)
+        sentences = [word_tokenize(sent) for sent in sentences]
+        sentences = [np.mean([glove_dict[word] for word in sent if word in glove_dict], axis=0) for sent in sentences]
+        sentences = np.array(sentences)
+        return sentences
+
+    return get_embedding
+
+
+def get_embedding_from_infersent(model_path, batch_size=128, use_cuda=True):
+    def get_infersent_embedding(sentences):
+        model = resume_model(model_path, use_cuda=use_cuda)
+        return model.encode(sentences, bsize=batch_size, tokenize=True, verbose=True)
+
+    return get_infersent_embedding
 
 
 def sent_no_clause(language_model, sentence):
@@ -161,9 +164,15 @@ def process_snli_json(snli_json):
     return [snli_dict["sentence1"], snli_dict["sentence2"]]
 
 
-if __name__ == '__main__':
-    triple_path = "/home/zxj/Documents/setence_evaluation/dataset/"
-    triplets = sentences_unfold(file_path=triple_path + "triplet_active_passive.txt", delimiter="\t")
+def encode_triples(file_path, delimiter, triple_to_embedding):
+    triplets = sentences_unfold(file_path=file_path, delimiter=delimiter)
     triplets = [ele.strip() for ele in triplets]
-    embeddings = get_sentence_embedding_from_glove(triplets)
+    embeddings = triple_to_embedding(triplets)
     calculate_pairwise_similarity(embeddings)
+
+if __name__ == '__main__':
+    triple_path = "/home/zxj/Dropbox/data/sentence_triples_random.txt"
+    model_path = DATA_PATH + "/infersent.allnli.pickle"
+    encode_triples(triple_path,
+                   delimiter="\t",
+                   triple_to_embedding=get_embedding_from_glove(GLOVE_PATH))
