@@ -10,6 +10,7 @@ from IOUtil import get_glove
 from nltk.tokenize import word_tokenize
 from functools import reduce
 import spacy
+from nltk.corpus import wordnet as wn
 
 DATA_PATH = "/home/zxj/Downloads/data"
 GLOVE_PATH = DATA_PATH + "/glove.840B.300d.txt"
