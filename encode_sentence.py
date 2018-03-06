@@ -49,12 +49,15 @@ def encoding_setences(model_path, glove_path, sentence_list, use_cuda=False) -> 
     embeddings = model.encode(sentence_list, bsize=128, tokenize=True, verbose=True)
     return embeddings
 
+
 def calculate_pairwise_similarity(embd, group_size=3):
+    results = []
     embd = embd.reshape((-1, group_size, embd.shape[1]))
     for ele in embd:
         res_mat = cosine_similarity(ele)
-        res_need = [str(res_mat[0][1].item()), str(res_mat[1][2].item()), str(res_mat[0][2].item())]
-        print("\t".join(res_need))
+        results.append([res_mat[0][1].item(), res_mat[1][2].item(), res_mat[0][2].item()])
+
+    return np.array(results)
 
 
 def sentences_unfold(file_path, delimiter="\001", predicate=lambda x: len(x) == 3):
@@ -161,14 +164,19 @@ def filter_passive(file_path):
 
 def process_snli_json(snli_json):
     snli_dict = json.loads(snli_json)
-    return [snli_dict["sentence1"], snli_dict["sentence2"]]
+    return [snli_dict["sentence1"], snli_dict["sentence2"], snli_dict["gold_label"]]
 
 
 def encode_triples(file_path, delimiter, triple_to_embedding):
     triplets = sentences_unfold(file_path=file_path, delimiter=delimiter)
     triplets = [ele.strip() for ele in triplets]
     embeddings = triple_to_embedding(triplets)
-    calculate_pairwise_similarity(embeddings)
+    results = calculate_pairwise_similarity(embeddings)
+    score_array = np.mean(axis=0, a=results)
+    true_results = score_array[:, 0] > score_array[:, 2]
+    accuracy = np.sum(true_results) / len(true_results)
+    print(score_array, accuracy)
+    
 
 if __name__ == '__main__':
     triple_path = "/home/zxj/Dropbox/data/sentence_triples_random.txt"

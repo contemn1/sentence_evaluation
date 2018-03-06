@@ -2,10 +2,13 @@ import re
 import spacy
 import random
 import numpy as np
+import operator
 from typing import Iterator
+from typing import List
 
 from encode_sentence import read_file
-from encode_sentence import load_sick
+from IOUtil import output_list_to_file
+from nltk.corpus import wordnet as wn
 
 NO_PATTERN = re.compile("No")
 CURRENT_PATTERN = re.compile("is|are|am")
@@ -36,6 +39,7 @@ def generate_negative_samples():
     file_generator = ([tup[0], tup[1].strip(), negate_verb(tup[0])] for tup in file_generator)
     for ele in file_generator:
         print("\001".join(ele).strip())
+
 
 def extract_verb(language_model, sentence):
     result_list = language_model(sentence)
@@ -162,27 +166,142 @@ def levenshtein(sent1, sent2, str_distance=equal_distance):
     return previous_row[-1]
 
 
-def select_similar_sentence(sents: Iterator[str]):
+def select_similar_sentence(sents: Iterator[List[str]]):
     for arr in sents:
         if negation.search(arr[0]) or negation.search(arr[1]):
             continue
 
         first = arr[0].split(" ")
         second = arr[1].split(" ")
-        tag = arr[2]
         dist = levenshtein(first, second)
         similarity = 1 - dist / ((len(first) + len(second)) / 2.0)
-        if tag == "CONTRADICTION" and (dist == 1 or similarity > 0.85):
-            print("\t".join(arr[:-1]))
+        if dist == 1 or 1 > similarity > 0.85:
+            yield (arr[0] + "\t" + arr[1])
 
 
-if __name__ == '__main__':
-    file_path = "/Users/zxj/Google 云端硬盘/experiment-results/similar_sentences_new.txt"
+def reorder_with_pivot(index):
+    def reorder_list(arr):
+        return " ".join(arr[index:]) + " " + " ".join(arr[:index])
+
+    return reorder_list
+
+
+def reorder_randomly(arr):
+    return " ".join(random.sample(arr, len(arr)))
+
+
+def generate_random(file_path, get_reordered):
+    """
+
+    :param file_path: specify path of a certain file
+    :return:
+    """
     sent_tuple = read_file(file_path, lambda x: x.strip().split("\t"))
-    fixed_index = 3
     for arr in sent_tuple:
         first_sent = arr[0]
         first_arr = first_sent.split(" ")
-        reversed_first = " ".join(first_arr[fixed_index:]) + " ".join(first_arr[:fixed_index])
+        reversed_first = get_reordered(first_arr)
         arr.append(reversed_first)
         print("\t".join(arr).strip())
+
+
+def load_sick2(sick_path="/Users/zxj/Downloads/SICK/SICK.txt"):
+    file_list = read_file(sick_path)
+    file_list = (ele.split("\t")[1:7] for ele in file_list if not ele.startswith("pair_ID"))
+    file_list = ([ele[0], ele[1], ele[2], ele[3]] for ele in file_list)
+    return file_list
+
+
+def calculate_word_frequency():
+    file_path = "/Users/zxj/Desktop/snli_1.0/possible_contradiction"
+    sent_tuple = read_file(file_path, lambda x: x.split("\t"))
+    results = {}
+    for arr in sent_tuple:
+        arr_tuple = zip(arr[0].split(" "), arr[1].split(" "))
+        arr_tuple = [ele for ele in arr_tuple if ele[0] != ele[1]]
+        arr_str = (arr_tuple[0][0] + "\t" + arr_tuple[0][1]).strip().lower()
+        if arr_str not in results:
+            results[arr_str] = 1
+        else:
+            results[arr_str] += 1
+
+    for key, value in results.items():
+        if value == 1:
+            print(key, value)
+
+
+def find_antonomy(word, tag):
+    def process_word(input):
+        return wn.synsets(input, pos=tag) if tag else wn.synsets(word)
+
+    lemmas = (l for syn in process_word(word) for l in syn.lemmas())
+    antonomy = [anto.name() for l in lemmas for anto in l.antonyms() if anto]
+    antonomy_set = set(antonomy)
+    if not antonomy_set:
+        return word
+    else:
+        return "|".join(antonomy_set)
+
+
+def convert_postag(treebank_tag: str):
+    if treebank_tag.startswith('J'):
+        return wn.ADJ
+    elif treebank_tag.startswith('V'):
+        return wn.VERB
+    elif treebank_tag.startswith('N'):
+        return wn.NOUN
+    elif treebank_tag.startswith('R'):
+        return wn.ADV
+    else:
+        return ''
+
+
+def find_pos_of_certain_word(model, sentence, word):
+    for ele in model(sentence):
+        if ele.text == word:
+            new_word = ele.text if ele.pos_ != "VERB" else ele.lemma_
+            return new_word, convert_postag(ele.tag_)
+
+    return word, ""
+
+
+def devide_dataset():
+    sents = load_sick2()
+    sents = (ele for ele in sents if float(ele[3]) > 4.6 and ele[2].lower() == "entailment")
+    model = spacy.load('en')
+    res1 = []
+    res2 = []
+    for ele in select_similar_sentence(sents):
+        arr = ele.split("\t")
+        first = arr[0].split(" ")
+        second = arr[1].split(" ")
+        if len(first) < len(second):
+            first, second = second, first
+            arr[0], arr[1] = arr[1], arr[0]
+
+        diff = set(first) - set(second)
+        if len(diff) == 1:
+            word, pos = find_pos_of_certain_word(model, arr[0], "".join(diff))
+            antonomy = find_antonomy(word, pos)
+            third = re.sub(word, antonomy, arr[0])
+            if arr[0] != third:
+                res1.append("\t".join([arr[0], arr[1], third]))
+            else:
+                res2.append("\t".join([arr[0], arr[1], third]))
+
+    output_list_to_file("changed.txt", res1)
+    output_list_to_file("unchanged.txt", res2)
+
+
+def exists_clause(model, sent):
+    for ele in model(sent):
+        if ele.dep_ == "ccomp":
+            return ele.head.text, sent
+
+    return ''
+
+
+if __name__ == '__main__':
+    generate_random(file_path="/Users/zxj/Dropbox/data/similar_structure.txt",
+                    get_reordered=reorder_randomly)
+
