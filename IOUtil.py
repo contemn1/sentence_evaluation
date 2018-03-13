@@ -9,7 +9,7 @@ import re
 from nltk.tokenize import sent_tokenize
 from gensim.models import KeyedVectors
 
-THINKREGEX = re.compile(" says? | said | knows? | knew | thinks? | thought ")
+THINKREGEX = re.compile(" says? | said | knows? | knew | thinks? | thought")
 
 
 def get_word_dict(sentences, tokenize=True):
@@ -122,8 +122,4 @@ def read_text_file_with_think(input_path):
         return sentecnes
 
 if __name__ == '__main__':
-    data_dir = "/home/zxj/Downloads/data"
-    model_path = data_dir + "/GoogleNews-vectors-negative300.bin"
-    model = load_pretrained_word2vec(model_path)
-    for ele in model.most_similar(positive=['perform'], topn=20):
-        print(ele)
+    read_text_file_with_think("/Users/zxj/Downloads/treebank_3/raw/wsj/02/wsj_3x.txt")

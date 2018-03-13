@@ -9,6 +9,8 @@ from typing import List
 from encode_sentence import read_file
 from IOUtil import output_list_to_file
 from nltk.corpus import wordnet as wn
+from BKTree import Tree
+import random
 
 NO_PATTERN = re.compile("No")
 CURRENT_PATTERN = re.compile("is|are|am")
@@ -301,7 +303,52 @@ def exists_clause(model, sent):
     return ''
 
 
-if __name__ == '__main__':
-    generate_random(file_path="/Users/zxj/Dropbox/data/similar_structure.txt",
-                    get_reordered=reorder_randomly)
+def random_typo(src_list, typo_dict, times):
+    history_typo = {}
+    while len(history_typo) < times:
+        random_word = random.choice(src_list)
+        if random_word not in typo_dict or random_word in history_typo:
+            continue
 
+        history_typo[random_word] = random.choice(typo_dict[random_word])
+
+    return history_typo
+
+
+def generate_typos():
+    a = read_file("/Users/zxj/Google 云端硬盘/similar_typos.txt",
+                  preprocess=lambda x: x.strip().split("\t"))
+    typo_dict = {arr[0]: arr[1].split(" ") for arr in a}
+    num = 3
+    sents = read_file("/Users/zxj/Dropbox/data/similar_structure.txt",
+                      preprocess=lambda x: x.strip().split("\t"))
+    for arr in sents:
+        words = arr[0].split(" ")
+        first =[1 if word in typo_dict else 0 for word in words]
+        if np.sum(first) >= num:
+            typo_map = random_typo(words, typo_dict, 1)
+            for key, value in typo_map.items():
+                new_sent = re.sub(key, value, arr[0])
+                arr.append(new_sent)
+                print("\t".join(arr))
+
+
+if __name__ == '__main__':
+    sents = read_file("/Users/zxj/Google 云端硬盘/experiment-results/Clause Relatedness/clause_relatededness_samples.txt",
+                      preprocess=lambda x: x.strip().split("\002")[:-1])
+    replace_dict = {"say": "deny",
+                    "says": "denies",
+                    "said": "denied",
+                    "think": "doubt",
+                    "thinks": "doubts",
+                    "thought": "doubted"}
+
+    for arr in sents:
+        for key, value in replace_dict.items():
+            pattern = re.compile(" {0}".format(key))
+            if not pattern.search(arr[0]):
+                continue
+
+            new_sent = pattern.sub(" {0}".format(value), arr[0])
+            arr.append(new_sent)
+            print("\t".join(arr))

@@ -25,9 +25,9 @@ def load_sentences(file_path):
         sys.exit(1)
 
 
-def read_file(file_path, preprocess=lambda x: x):
+def read_file(file_path, encoding="utf-8", preprocess=lambda x: x):
     try:
-        with open(file_path, encoding="utf8") as file:
+        with open(file_path, encoding=encoding) as file:
             for sentence in file.readlines():
                 yield (preprocess(sentence))
 
@@ -176,7 +176,7 @@ def encode_triples(file_path, delimiter, triple_to_embedding):
     true_results = score_array[:, 0] > score_array[:, 2]
     accuracy = np.sum(true_results) / len(true_results)
     print(score_array, accuracy)
-    
+
 
 if __name__ == '__main__':
     triple_path = "/home/zxj/Dropbox/data/sentence_triples_random.txt"
