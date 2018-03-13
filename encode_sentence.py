@@ -10,6 +10,7 @@ from IOUtil import get_glove
 from nltk.tokenize import word_tokenize
 from functools import reduce
 import spacy
+from nltk.corpus import wordnet as wn
 
 DATA_PATH = "/home/zxj/Downloads/data"
 GLOVE_PATH = DATA_PATH + "/glove.840B.300d.txt"
@@ -173,13 +174,17 @@ def encode_triples(file_path, delimiter, triple_to_embedding):
     embeddings = triple_to_embedding(triplets)
     results = calculate_pairwise_similarity(embeddings)
     score_array = np.mean(axis=0, a=results)
-    true_results = score_array[:, 0] > score_array[:, 2]
+    true_results = results[:, 0] > results[:, 2]
     accuracy = np.sum(true_results) / len(true_results)
-    print(score_array, accuracy)
+
+    result_arr = score_array.tolist()
+    result_arr.append(accuracy)
+    result_arr = ["{:.2f}\\%".format(ele * 100) for ele in result_arr]
+    print(" & ".join(result_arr))
 
 
 if __name__ == '__main__':
-    triple_path = "/home/zxj/Dropbox/data/sentence_triples_random.txt"
+    triple_path = "/home/zxj/Dropbox/typos/3typo.txt"
     model_path = DATA_PATH + "/infersent.allnli.pickle"
     encode_triples(triple_path,
                    delimiter="\t",
