@@ -11,6 +11,7 @@ from nltk.tokenize import word_tokenize
 from functools import reduce
 import spacy
 from nltk.corpus import wordnet as wn
+import sent2vec
 
 DATA_PATH = "/home/zxj/Downloads/data"
 GLOVE_PATH = DATA_PATH + "/glove.840B.300d.txt"
@@ -56,7 +57,7 @@ def calculate_pairwise_similarity(embd, group_size=3):
     embd = embd.reshape((-1, group_size, embd.shape[1]))
     for ele in embd:
         res_mat = cosine_similarity(ele)
-        results.append([res_mat[0][1].item(), res_mat[1][2].item(), res_mat[0][2].item()])
+        results.append([res_mat[0][1].item(), res_mat[0][2].item(), res_mat[1][2].item()])
 
     return np.array(results)
 
@@ -95,7 +96,7 @@ def get_embedding_from_glove(glove_path=GLOVE_PATH):
         glove_dict = get_glove(glove_path, word_dict)
         sentences = [word_tokenize(sent) for sent in sentences]
         sentences = [np.mean([glove_dict[word] for word in sent if word in glove_dict], axis=0) for sent in sentences]
-        sentences = np.array(sentences)
+        sentences = np.array(sentences, dtype=np.float32)
         return sentences
 
     return get_embedding
@@ -107,6 +108,16 @@ def get_embedding_from_infersent(model_path, batch_size=128, use_cuda=True):
         return model.encode(sentences, bsize=batch_size, tokenize=True, verbose=True)
 
     return get_infersent_embedding
+
+
+def get_embedding_from_sent2vec(model_path):
+    def get_fast_text_embedding(sentences):
+        model = sent2vec.Sent2vecModel()
+        model.load_model(model_path)
+        embeddings = model.embed_sentences(sentences)
+        return embeddings
+
+    return get_fast_text_embedding
 
 
 def sent_no_clause(language_model, sentence):
@@ -174,7 +185,7 @@ def encode_triples(file_path, delimiter, triple_to_embedding):
     embeddings = triple_to_embedding(triplets)
     results = calculate_pairwise_similarity(embeddings)
     score_array = np.mean(axis=0, a=results)
-    true_results = results[:, 0] > results[:, 2]
+    true_results = results[:, 0] > results[:, 1]
     accuracy = np.sum(true_results) / len(true_results)
     result_arr = score_array.tolist()
     result_arr.append(accuracy)
@@ -182,8 +193,9 @@ def encode_triples(file_path, delimiter, triple_to_embedding):
     print(" & ".join(result_arr))
 
 if __name__ == '__main__':
-    triple_path = "/home/zxj/Dropbox/typos/3typo.txt"
+    triple_path = "/home/zxj/Dropbox/typos/1typo.txt"
     model_path = DATA_PATH + "/infersent.allnli.pickle"
+    sent2vec_model_path = "/media/zxj/New Volume/wiki_unigrams.bin"
     encode_triples(triple_path,
                    delimiter="\t",
-                   triple_to_embedding=get_embedding_from_glove(GLOVE_PATH))
+                   triple_to_embedding=get_embedding_from_sent2vec(sent2vec_model_path))

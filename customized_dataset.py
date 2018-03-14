@@ -52,3 +52,14 @@ class TextIndexDataset(Dataset):
         indices_array = np.array(indices, dtype=np.int)
         return torch.LongTensor(indices_array)
 
+
+class EmbeddingDataset(Dataset):
+    def __init__(self, data_x, data_y):
+        self.embeddings = data_x
+        self.labels = data_y
+
+    def __len__(self):
+        return len(self.embeddings)
+
+    def __getitem__(self, item):
+        return torch.from_numpy(self.embeddings[item]), self.labels[item]
