@@ -60,7 +60,7 @@ if __name__ == '__main__':
     DATA_PATH = "/home/zxj/Downloads/data"
     GLOVE_PATH = DATA_PATH + "/glove.840B.300d.txt"
     model_path = DATA_PATH + "/infersent.allnli.pickle"
-    encode_function = get_embedding_from_infersent(model_path, batch_size=256, use_cuda=True)
+    encode_function = get_embedding_from_infersent(model_path, batch_size=128, use_cuda=True)
     train_path = SICK_ROOT + "SICK_train.txt"
     dev_path = SICK_ROOT + "SICK_trial.txt"
     test_path = SICK_ROOT + "SICK_test_annotated.txt"
@@ -75,6 +75,6 @@ if __name__ == '__main__':
     index = 0
     train_loader = create_data_loader(data, labels, params)
     dev_loader = create_data_loader(data_dev, labels, params)
-    classifier = MLP(params, data.shape[1], nclasses=3, l2reg=10**-3)
+    classifier = MLP(params, data.shape[1], nclasses=3, l2reg=10**-5)
     classifier.fit(train_loader, dev_loader)
     torch.save(classifier.model.state_dict(), "infersent_classifier")
