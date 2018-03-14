@@ -19,11 +19,13 @@ import torch
 from torch import nn
 import torch.optim as optim
 from torch.autograd import Variable
+import torch.nn.functional as F
+
 
 
 class PyTorchClassifier(object):
     def __init__(self, inputdim, nclasses, l2reg=0., batch_size=64, seed=1111,
-                 use_cuda=True, nepoches=4, maxepoch=200):
+                 use_cuda=True):
         # fix seed
         np.random.seed(seed)
         torch.manual_seed(seed)
@@ -33,8 +35,6 @@ class PyTorchClassifier(object):
         self.l2reg = l2reg
         self.batch_size = batch_size
         self.use_cuda = use_cuda
-        self.nepoches = nepoches
-        self.maxepoch = maxepoch
 
     def fit(self, train_dataloader, dev_dataloader,
             early_stop=True):
@@ -44,17 +44,18 @@ class PyTorchClassifier(object):
         early_stop_count = 0
 
         # Training
-        while not stop_train and self.nepoch <= self.maxepoch:
-            self.trainepoch(train_dataloader, nepoches=self.nepoches)
+        while not stop_train and self.nepoch <= self.max_epoch:
+            loss = self.trainepoch(train_dataloader, nepoches=self.epoch_size)
             accuracy = self.score(dev_dataloader)
-            print("current epoch is {0}, accuracy is {1}, best accuracy is{2}".format(self.nepoch, accuracy, bestaccuracy))
+            accuracy_train = self.score(train_dataloader)
+            print("current epoch is {0}, accuracy is {1}, best accuracy is {2} acc train is {3}".format(self.nepoch, accuracy, bestaccuracy, accuracy_train))
 
             if accuracy > bestaccuracy:
                 bestaccuracy = accuracy
                 bestmodel = copy.deepcopy(self.model)
 
             elif early_stop:
-                if early_stop_count >= 5:
+                if early_stop_count >= self.tenacity:
                     stop_train = True
                 early_stop_count += 1
                 print("current epoch is {0}, early stop count is {1}".format(self.nepoch, early_stop_count))
@@ -86,6 +87,7 @@ class PyTorchClassifier(object):
                 # Update parameters
                 self.optimizer.step()
         self.nepoch += nepoches
+        return np.mean(all_costs)
 
     def score(self, dev_dataloader):
         self.model.eval()
@@ -97,10 +99,11 @@ class PyTorchClassifier(object):
                 Xbatch = Xbatch.cuda()
                 ybatch = ybatch.cuda()
             Xbatch = Variable(Xbatch, volatile=True)
+            ybatch = Variable(ybatch, volatile=True)
 
             output = self.model(Xbatch)
             pred = output.data.max(1)[1]
-            correct += pred.long().eq(ybatch).sum()
+            correct += pred.long().eq(ybatch.data.long()).sum()
         accuracy = (1.0 * correct) / number_of_data
         return accuracy
 
@@ -108,6 +111,7 @@ class PyTorchClassifier(object):
         self.model.eval()
         yhat = np.array([])
         for Xbatch, _ in dev_loader:
+            Xbatch = Variable(Xbatch, volatile=True)
             if self.use_cuda:
                 Xbatch = Xbatch.cuda()
             output = self.model(Xbatch)
@@ -120,12 +124,14 @@ class PyTorchClassifier(object):
         self.model.eval()
         probas = []
         for Xbatch, _ in dev_loader:
-            Xbatch = Variable(Xbatch)
+            Xbatch = Variable(Xbatch, volatile=True)
+            vals = F.softmax(self.model(Xbatch).data.cpu().numpy())
+
             if not probas:
-                probas = self.model(Xbatch).data.cpu().numpy()
+                probas = vals
             else:
                 probas = np.concatenate(probas,
-                                        self.model(Xbatch).data.cpu().numpy(),
+                                        vals,
                                         axis=0)
         return probas
 
@@ -136,10 +142,12 @@ Logistic Regression with Pytorch
 
 
 class LogReg(PyTorchClassifier):
-    def __init__(self, inputdim, nclasses, l2reg=0., batch_size=64,
-                 seed=1111, use_cuda=False):
+    def __init__(self, params, inputdim, nclasses, l2reg=0., batch_size=64,
+                 seed=1111, use_cuda=True):
         super(self.__class__, self).__init__(inputdim, nclasses, l2reg,
                                              batch_size, seed, use_cuda)
+        self.epoch_size = 1 if "epoch_size" not in params else params["epoch_size"]
+        self.max_epoch = 200 if "max_epoch" not in params else params["max_epoch"]
         self.model = nn.Sequential(
             nn.Linear(self.inputdim, self.nclasses),
         ).cuda()
@@ -155,21 +163,41 @@ MLP with Pytorch
 
 
 class MLP(PyTorchClassifier):
-    def __init__(self, inputdim, hiddendim, nclasses, l2reg=0., batch_size=64,
-                 seed=1111, use_cuda=False):
+    def __init__(self, params, inputdim, nclasses, l2reg=0., batch_size=64,
+                 seed=1111, use_cuda=True):
         super(self.__class__, self).__init__(inputdim, nclasses, l2reg,
                                              batch_size, seed, use_cuda)
+        """
+        PARAMETERS:
+        -nhid:       number of hidden units (0: Logistic Regression)
+        -optim:      optimizer ("sgd,lr=0.1", "adam", "rmsprop" ..)
+        -tenacity:   how many times dev acc does not increase before stopping
+        -epoch_size: each epoch corresponds to epoch_size pass on the train set
+        -max_epoch:  max number of epoches
+        -dropout:    dropout for MLP
+        """
 
-        self.hiddendim = hiddendim
+        self.nhid = 0 if "nhid" not in params else params["nhid"]
+        self.tenacity = 5 if "tenacity" not in params else params["tenacity"]
+        self.epoch_size = 4 if "epoch_size" not in params else params["epoch_size"]
+        self.max_epoch = 200 if "max_epoch" not in params else params["max_epoch"]
+        self.dropout = 0. if "dropout" not in params else params["dropout"]
+        self.batch_size = 64 if "batch_size" not in params else params["batch_size"]
 
-        self.model = nn.Sequential(
-            nn.Linear(self.inputdim, self.hiddendim),
-            # TODO : add parameter p for dropout
-            nn.ReLU(),
-            nn.Dropout(p=0.8),
-            nn.Linear(self.hiddendim, self.nclasses),
-            nn.Softmax()
-        ).cuda()
+        if params["nhid"] == 0:
+            self.model = nn.Sequential(
+                nn.Linear(self.inputdim, self.nclasses),
+                )
+        else:
+            self.model = nn.Sequential(
+                nn.Linear(self.inputdim, params["nhid"]),
+                nn.Dropout(p=self.dropout),
+                nn.Sigmoid(),
+                nn.Linear(params["nhid"], self.nclasses),
+                )
+
+        if use_cuda:
+            self.model = self.model.cuda()
 
         self.loss_fn = nn.CrossEntropyLoss().cuda()
         self.loss_fn.size_average = False
