@@ -7,6 +7,7 @@ from typing import Iterator
 from typing import List
 
 from encode_sentence import read_file
+from encode_sentence import take_two
 from IOUtil import output_list_to_file
 from nltk.corpus import wordnet as wn
 
@@ -302,6 +303,8 @@ def exists_clause(model, sent):
 
 
 if __name__ == '__main__':
-    generate_random(file_path="/Users/zxj/Dropbox/data/similar_structure.txt",
-                    get_reordered=reorder_randomly)
-
+    sents = read_file("SICK_test_antonym.txt", preprocess=lambda x: x.strip().split("\t"))
+    label2id = {'CONTRADICTION': 0, 'NEUTRAL': 1, 'ENTAILMENT': 2}
+    for index, tuple in enumerate(sents):
+        if tuple[4] not in label2id:
+            print(index, tuple)
