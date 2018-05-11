@@ -76,28 +76,29 @@ def load_sick(sick_path="/Users/zxj/Downloads/SICK/SICK.txt"):
     return file_list
 
 
-def encode_sick(use_cuda, model_path):
-    file_list = load_sick()
-    file_list = list(file_list)
-    first = [ele[0] for ele in file_list]
-    second = [ele[1] for ele in file_list]
-    third = [ele[2] for ele in file_list]
-    model = resume_model(model_path, use_cuda=use_cuda)
-    first_emb = model.encode(first, bsize=128, tokenize=True, verbose=True)
-    second_emb = model.encode(second, bsize=128, tokenize=True, verbose=False)
-    res = cosine_similarity(first_emb, second_emb).diagonal().tolist()
-    for ele in zip(res, third):
-        print(str(ele[0]) + "\t" + ele[1])
+def power_mean(p):
+    def calculate_mean(array):
+        if p == 1:
+            return np.mean(array, axis=0)
+
+        mean = np.power(array, p).mean(axis=0).astype('complex')
+        return np.power(mean, (1.0 / p)).real
+
+    return calculate_mean
 
 
-def get_embedding_from_glove(glove_path=GLOVE_PATH):
+def get_embedding_from_glove(glove_path=GLOVE_PATH, power=1):
     def get_embedding(sentences):
         word_dict = get_word_dict(sentences)
         glove_dict = get_glove(glove_path, word_dict)
         sentences = [word_tokenize(sent) for sent in sentences]
-        sentences = [np.mean([glove_dict[word] for word in sent if word in glove_dict], axis=0) for sent in sentences]
-        sentences = np.array(sentences, dtype=np.float32)
-        return sentences
+        sentences = [[glove_dict[word] for word in sent if word in glove_dict] for sent in sentences]
+        average = np.array([power_mean(1)(vec) for vec in sentences], dtype=np.float32)
+        if power > 1:
+            for index in range(2, power + 1):
+                average = np.concatenate((average, [power_mean(index)(vec) for vec in sentences]), axis=1)
+
+        return average
 
     return get_embedding
 
@@ -142,20 +143,6 @@ def filter_sick_dataset():
         print(ele)
 
 
-def pipeline():
-    file_path = "inversion_tuple.txt"
-    model_path = "/home/zxj/Downloads/data/infersent.allnli.pickle"
-    sentences = list(read_file(file_path, preprocess=lambda x: x.split("\001")))
-    first = [tup[0] for tup in sentences]
-    second = [tup[1].strip() for tup in sentences]
-    model = resume_model(model_path, use_cuda=True)
-    first_emb = model.encode(first, bsize=128, tokenize=True, verbose=True)
-    second_emb = model.encode(second, bsize=128, tokenize=True, verbose=False)
-    res = cosine_similarity(first_emb, second_emb).diagonal().tolist()
-    for ele in res:
-        print(ele)
-
-
 def take_two(sentence):
     triple = sentence.split("\t")
     return triple[0], triple[2]
@@ -183,19 +170,35 @@ def encode_triples(file_path, delimiter, triple_to_embedding):
     triplets = sentences_unfold(file_path=file_path, delimiter=delimiter)
     triplets = [ele.strip() for ele in triplets]
     embeddings = triple_to_embedding(triplets)
+    return embeddings
+
+
+def output_results(embeddings, verbose=False):
     results = calculate_pairwise_similarity(embeddings)
     score_array = np.mean(axis=0, a=results)
+    if verbose:
+        np.savetxt("average_scores", results)
     true_results = results[:, 0] > results[:, 1]
     accuracy = np.sum(true_results) / len(true_results)
     result_arr = score_array.tolist()
     result_arr.append(accuracy)
     result_arr = ["{:.2f}\\%".format(ele * 100) for ele in result_arr]
-    print(" & ".join(result_arr))
+    return result_arr
 
 if __name__ == '__main__':
-    triple_path = "/home/zxj/Dropbox/typos/1typo.txt"
+    triple_path = "/home/zxj/Dropbox/typos/3typo.txt"
     model_path = DATA_PATH + "/infersent.allnli.pickle"
     sent2vec_model_path = "/media/zxj/New Volume/wiki_unigrams.bin"
-    encode_triples(triple_path,
-                   delimiter="\t",
-                   triple_to_embedding=get_embedding_from_sent2vec(sent2vec_model_path))
+    triples = sentences_unfold(file_path=triple_path, delimiter="\t")
+
+    glove_result = output_results(get_embedding_from_glove(GLOVE_PATH, power=1)(triples))
+    print("Glove Avg \t &　{0} \t \\\\ ".format("\t &".join(glove_result)))
+    '''
+    p_means_result = output_results(get_embedding_from_glove(GLOVE_PATH, power=3)(triples))
+    print("P Means \t &　{0} \t \\\\ ".format("\t & ".join(p_means_result)))
+
+    sent2vec_result = output_results(get_embedding_from_sent2vec(sent2vec_model_path)(triples), verbose=True)
+    print("Sent2Vec \t &　{0} \t \\\\ ".format("\t & ".join(sent2vec_result)))
+    '''
+    infer_sent_result = output_results(get_embedding_from_infersent(model_path)(triples))
+    print("Infersent \t &　{0} \t   \\\\ \\bottomrule".format("\t & ".join(infer_sent_result)))

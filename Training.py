@@ -64,17 +64,15 @@ if __name__ == '__main__':
     train_path = SICK_ROOT + "SICK_train.txt"
     dev_path = SICK_ROOT + "SICK_trial.txt"
     test_path = SICK_ROOT + "SICK_test_annotated.txt"
-    data, labels = load_data(train_path, encode_function)
-    data_dev, labels_dev = load_data(dev_path, encode_function)
+    data_test, labels_test = load_data(test_path, encode_function)
     params = {"batch_size": 64,
               "use_cuda": True,
               "nhid": 16,
               "max_epoch": 200,
               "epoch_size": 4,
               "tenacity": 10}
-    index = 0
-    train_loader = create_data_loader(data, labels, params)
-    dev_loader = create_data_loader(data_dev, labels, params)
-    classifier = MLP(params, data.shape[1], nclasses=3, l2reg=10**-5)
-    classifier.fit(train_loader, dev_loader)
+    test_loader = create_data_loader(data_test, labels_test, params)
+    classifier = MLP(params, data_test.shape[1], nclasses=3, l2reg=10**-5)
+    classifier.model.load_state_dict(torch.load("models/infersent_sick.pt"))
+    print(classifier.score(test_loader))
     torch.save(classifier.model.state_dict(), "infersent_classifier")
