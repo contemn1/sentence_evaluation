@@ -11,6 +11,8 @@ from IOUtil import output_list_to_file
 from nltk.corpus import wordnet as wn
 from BKTree import Tree
 import random
+import spacy
+import json
 
 NO_PATTERN = re.compile("No")
 CURRENT_PATTERN = re.compile("is|are|am")
@@ -332,8 +334,7 @@ def generate_typos():
                 arr.append(new_sent)
                 print("\t".join(arr))
 
-
-if __name__ == '__main__':
+def factual_test():
     sents = read_file("/Users/zxj/Google 云端硬盘/experiment-results/Clause Relatedness/clause_relatededness_samples.txt",
                       preprocess=lambda x: x.strip().split("\002")[:-1])
     replace_dict = {"say": "deny",
@@ -352,3 +353,137 @@ if __name__ == '__main__':
             new_sent = pattern.sub(" {0}".format(value), arr[0])
             arr.append(new_sent)
             print("\t".join(arr))
+
+
+def first_to_upper(sentence):
+    sent_list = sentence.split(" ")
+    return sent_list[0].title() + " " + " ".join(sent_list[1:])
+
+
+def extract_clause(sent, language_model):
+    result_list = language_model(sent)
+    verb_in_clause = [ele for ele in result_list if ele.dep_ == "ccomp" and ele.head.dep_ == "ROOT"]
+    if not verb_in_clause:
+        return ""
+
+    if verb_in_clause[0].idx < verb_in_clause[0].head.idx:
+        result = re.search('\"(.+?)\"', sent)
+        return first_to_upper(result.group()[1:-1]) if result else ""
+    subj_in_clause = [subj for subj in verb_in_clause[0].children if subj.dep_ == "nsubj"]
+    if not subj_in_clause:
+        return ""
+
+    if not subj_in_clause[0].children:
+        return sent[subj_in_clause[0].idx:]
+
+    sorted_children = sorted(list(subj_in_clause[0].children), key=lambda x: x.idx)
+    if not sorted_children:
+        return ""
+    start_index = sorted_children[0].idx
+    result = sent[start_index:]
+    return first_to_upper(result)
+
+
+def extrac_caluse_from_msr(language_model):
+    path = "/Users/zxj/Downloads/dataset-sts/data/para/msr/msr-para-train.tsv"
+    file = read_file(path, preprocess=lambda x: x.split("\t"))
+    file = [(ele[3], ele[4].strip()) for ele in file if ele[0] == "1"]
+    say_regex = re.compile("said|says?|saying|tell|told|thinks")
+    for a, b in file:
+        if say_regex.search(a):
+            clause = extract_clause(a, language_model)
+            if clause:
+                print(a + "\t" + clause)
+        if not say_regex.search(a) and say_regex.search(b):
+            clause = extract_clause(b, language_model)
+            if clause:
+                print(b + "\t" + clause)
+
+
+def negate_word_msr(old_sent, language_model):
+    new_sent = old_sent
+    for token in language_model(old_sent):
+        if token.dep_ == "ccomp" and token.head.dep_ == "ROOT":
+            neg_child = [child for child in token.children if child.dep_ == "neg"]
+            if neg_child:
+                neg_word = neg_child[0]
+                new_sent = re.sub("{0} ".format(neg_word), " ", old_sent)
+                new_sent = re.sub(" wo ", " will ", new_sent)
+                new_sent = re.sub(" does ", " ", new_sent)
+
+            elif token.tag_ == "VBZ":
+                if token.text == "is":
+                    new_sent = re.sub(" is ".format(token.text),
+                                      " isn't ",
+                                      old_sent)
+                else:
+                    new_sent = re.sub("{0}".format(token.text),
+                                      "doesn't {0}".format(token.lemma_),
+                                      old_sent)
+
+            elif token.tag_ == "VBP":
+                new_sent = re.sub("{0}".format(token.text), "don't {0}".format(token), old_sent)
+
+            elif token.tag_ == "VBD":
+                new_sent = re.sub("{0}".format(token.text), "didn't {0}".format(token.lemma_), old_sent)
+
+            else:
+                aux_word = [child for child in token.children if child.dep_ == "aux"]
+                if aux_word and not aux_word[0].text == "will":
+                    new_sent = re.sub(" {0} ".format(aux_word[0].text),
+                                      " {0}n't ".format(aux_word[0].text), old_sent)
+                if aux_word and aux_word[0].text == "will":
+                    new_sent = re.sub(" {0} ".format(aux_word[0].text),
+                                      " won't ".format(aux_word[0].text), old_sent)
+            return new_sent
+
+
+def negation_variant_sick(sentence_list):
+    is_regex = re.compile(" is ")
+    are_regex = re.compile(" are ")
+    for ele in sentence_list:
+        first_word = ele.split(" ")[0]
+        if is_regex.search(ele):
+            second = is_regex.sub(" is not ", ele)
+            third = is_regex.sub(" ", ele)
+            third = re.sub("^{0}".format(first_word), "There is no", third)
+            print(ele + "\t" + second + "\t" + third)
+
+        if are_regex.search(ele):
+            second = are_regex.sub(" are not ", ele)
+            third = are_regex.sub(" ", ele)
+            third = re.sub("^{0}".format(first_word), "There are no", third)
+            print(ele + "\t" + second + "\t" + third)
+
+
+def extract_verb_phases(sent, model):
+    doc = model(sent)
+    verb_phases = []
+    for ele in doc:
+        if ele.dep_ == "ROOT" and ele.pos_ == "VERB":
+            print(ele.pos_)
+            verb_phases.append(ele.text)
+            continue
+        if ele.dep_ == "prep" and ele.head.dep_ == "ROOT" and ele.head.pos_ == "VERB":
+            verb_phases.append(ele.text)
+            continue
+        if ele.dep_ == "prt" and ele.head.dep_ == "ROOT" and ele.head.pos_ == "VERB":
+            verb_phases.append(ele.text)
+
+    return " ".join(verb_phases)
+
+
+if __name__ == '__main__':
+    language_model = spacy.load("en")
+    clause_path = "/Users/zxj/Downloads/sub_clause.txt"
+    name_path = "/Users/zxj/PycharmProjects/sentence_evaluation/person_names.txt"
+    clause_list = list(read_file(clause_path, preprocess=lambda x: x.strip()))
+    name_list = list(read_file(name_path, preprocess=lambda x: x.strip()))
+    for ele in clause_list[:255]:
+        first_char = ele[0].lower()
+        ele = first_char + ele[1:]
+        first, second = random.choices(name_list, k=2)
+        original = "{0} tells {1} that {2}".format(first, second, ele)
+        passive = "{0} is told that {1}".format(second, ele)
+        inverted = "{0} tells {1} that {2}".format(second, first, ele)
+        print("\t".join([original, passive, inverted]))
