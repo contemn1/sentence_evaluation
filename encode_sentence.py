@@ -27,9 +27,9 @@ def load_sentences(file_path):
         sys.exit(1)
 
 
-def read_file(file_path, preprocess=lambda x: x):
+def read_file(file_path, encoding="utf-8", preprocess=lambda x: x):
     try:
-        with open(file_path, encoding="utf8") as file:
+        with open(file_path, encoding=encoding) as file:
             for sentence in file.readlines():
                 yield (preprocess(sentence))
 
@@ -180,10 +180,12 @@ def output_results(embeddings, verbose=False):
         np.savetxt("average_scores", results)
     true_results = results[:, 0] > results[:, 1]
     accuracy = np.sum(true_results) / len(true_results)
+
     result_arr = score_array.tolist()
     result_arr.append(accuracy)
     result_arr = ["{:.2f}\\%".format(ele * 100) for ele in result_arr]
     return result_arr
+
 
 if __name__ == '__main__':
     triple_path = "/home/zxj/Dropbox/typos/3typo.txt"
