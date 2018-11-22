@@ -11,6 +11,7 @@ from nltk.tokenize import word_tokenize
 from functools import reduce
 import spacy
 from nltk.corpus import wordnet as wn
+from scipy import logical_and
 import sent2vec
 
 DATA_PATH = "/home/zxj/Downloads/data"
@@ -64,7 +65,7 @@ def calculate_pairwise_similarity(embd, group_size=3):
 
 def sentences_unfold(file_path, delimiter="\001", predicate=lambda x: len(x) == 3):
     sent_list = read_file(file_path, preprocess=lambda ele: ele.split(delimiter))
-    sent_list = [arr for arr in sent_list if predicate(arr)]
+    sent_list = (arr for arr in sent_list if predicate(arr))
     sent_list = [ele for arr in sent_list for ele in arr]
     return sent_list
 
@@ -93,7 +94,13 @@ def get_embedding_from_glove(glove_path=GLOVE_PATH, power=1):
         glove_dict = get_glove(glove_path, word_dict)
         sentences = [word_tokenize(sent) for sent in sentences]
         sentences = [[glove_dict[word] for word in sent if word in glove_dict] for sent in sentences]
-        average = np.array([power_mean(1)(vec) for vec in sentences], dtype=np.float32)
+        result_list = []
+        print(len(sentences))
+        for idx, vec in enumerate(sentences):
+            result = power_mean(1)(vec)
+            result_list.append(result)
+
+        average = np.array(result_list, dtype=np.float32)
         if power > 1:
             for index in range(2, power + 1):
                 average = np.concatenate((average, [power_mean(index)(vec) for vec in sentences]), axis=1)
@@ -173,13 +180,28 @@ def encode_triples(file_path, delimiter, triple_to_embedding):
     return embeddings
 
 
-def output_results(embeddings, verbose=False):
+def normal_accuracy(results):
+    true_results = results[:, 0] > results[:, 2]
+    accuracy = np.sum(true_results) / len(true_results)
+    return accuracy
+
+
+def negation_variant_accuracy(results):
+    true_results1 = results[:, 0] < results[:, 2]
+    true_results2 = results[:, 1 ] < results[:, 2]
+    true_result = logical_and(true_results1, true_results2)
+    accuracy = np.sum(true_result) / len(true_result)
+    return accuracy
+
+
+def output_results(embeddings, verbose=False, calculate_accuracy=normal_accuracy, output_path="average_scores"):
     results = calculate_pairwise_similarity(embeddings)
     score_array = np.mean(axis=0, a=results)
     if verbose:
-        np.savetxt("average_scores", results)
-    true_results = results[:, 0] > results[:, 1]
-    accuracy = np.sum(true_results) / len(true_results)
+        output = 100 * results
+        np.savetxt(output_path, output, fmt='%10.3f', delimiter='\t')
+
+    accuracy = calculate_accuracy(results)
 
     result_arr = score_array.tolist()
     result_arr.append(accuracy)
@@ -187,20 +209,31 @@ def output_results(embeddings, verbose=False):
     return result_arr
 
 
+
+
 if __name__ == '__main__':
-    triple_path = "/home/zxj/Dropbox/typos/3typo.txt"
+    triple_path = "/home/zxj/Dropbox/corpus/argument_sensitivity_all.txt"
     model_path = DATA_PATH + "/infersent.allnli.pickle"
     sent2vec_model_path = "/media/zxj/New Volume/wiki_unigrams.bin"
     triples = sentences_unfold(file_path=triple_path, delimiter="\t")
 
-    glove_result = output_results(get_embedding_from_glove(GLOVE_PATH, power=1)(triples))
+    glove_result = output_results(get_embedding_from_glove(GLOVE_PATH, power=1)(triples),
+                                  calculate_accuracy=normal_accuracy)
     print("Glove Avg \t &　{0} \t \\\\ ".format("\t &".join(glove_result)))
-    '''
-    p_means_result = output_results(get_embedding_from_glove(GLOVE_PATH, power=3)(triples))
+
+    p_means_result = output_results(get_embedding_from_glove(GLOVE_PATH, power=3)(triples),
+                                    calculate_accuracy=normal_accuracy)
     print("P Means \t &　{0} \t \\\\ ".format("\t & ".join(p_means_result)))
 
-    sent2vec_result = output_results(get_embedding_from_sent2vec(sent2vec_model_path)(triples), verbose=True)
+    sent2vec_result = output_results(get_embedding_from_sent2vec(sent2vec_model_path)(triples),
+                                     calculate_accuracy=normal_accuracy,
+                                     verbose=False,
+                                     output_path="set2vec_clause_relatedness")
     print("Sent2Vec \t &　{0} \t \\\\ ".format("\t & ".join(sent2vec_result)))
-    '''
-    infer_sent_result = output_results(get_embedding_from_infersent(model_path)(triples))
+
+    infer_sent_result = output_results(get_embedding_from_infersent(model_path)(triples),
+                                       calculate_accuracy=normal_accuracy,
+                                       verbose=True,
+                                       output_path="infersent_clause_relatedness")
+
     print("Infersent \t &　{0} \t   \\\\ \\bottomrule".format("\t & ".join(infer_sent_result)))
