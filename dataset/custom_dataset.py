@@ -5,9 +5,11 @@ import torch
 
 
 class TextIndexDataset(Dataset):
-    def __init__(self, word_sequence, tokenizer):
+    def __init__(self, word_sequence, tokenizer,
+                 use_cuda=torch.cuda.is_available()):
         self.raw_texts = word_sequence
         self.tokenizer = tokenizer
+        self.device = "cuda" if use_cuda else "cpu"
 
     def __len__(self):
         return len(self.raw_texts)
@@ -24,7 +26,8 @@ class TextIndexDataset(Dataset):
         '''
         sequence_lengths = np.array([len(ele) for ele in batch_ids])
         padded_batch_ids = pad(batch_ids, sequence_lengths,
-                               0)  # type: torch.tensor
+                               0)  # type: torch.Tensor
+        padded_batch_ids = padded_batch_ids.to(self.device)
         input_masks = padded_batch_ids > 0
         return padded_batch_ids, input_masks
 

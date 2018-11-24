@@ -17,6 +17,7 @@ from config import init_argument_parser
 import os
 from dataset.custom_dataset import TextIndexDataset
 from pytorch_pretrained_bert import BertTokenizer
+from torch.utils.data import DataLoader
 
 def load_sentences(file_path):
     try:
@@ -256,7 +257,6 @@ def get_results(file_paths):
 if __name__ == '__main__':
     parser = init_argument_parser()
     config = parser.parse_args()
-    print(config)
     glove_path = config.glove_path
     model_path = config.infer_sent_model_path
     sent2vec_model_path = config.sent2vec_model_path
@@ -266,3 +266,11 @@ if __name__ == '__main__':
                       "fixed_point_inversion.txt"]
     file_path_list = [os.path.join(data_path, ele) for ele in file_name_list]
     tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
+    first = sentences_unfold(file_path_list[0])
+    dataset = TextIndexDataset(first, tokenizer)
+    data_loader = DataLoader(dataset, batch_size=72, num_workers=4,
+                             collate_fn=dataset.collate_fn_one2one)
+    for ids, masks in data_loader:
+        print(ids)
+        print(masks)
+        break
