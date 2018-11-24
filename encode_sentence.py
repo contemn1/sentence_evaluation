@@ -266,11 +266,10 @@ if __name__ == '__main__':
                       "fixed_point_inversion.txt"]
     file_path_list = [os.path.join(data_path, ele) for ele in file_name_list]
     tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
-    first = sentences_unfold(file_path_list[0])
-    dataset = TextIndexDataset(first, tokenizer)
+    first = sentences_unfold(file_path_list[0], delimiter="\t")
+    dataset = TextIndexDataset(first, tokenizer, True)
     data_loader = DataLoader(dataset, batch_size=72, num_workers=4,
                              collate_fn=dataset.collate_fn_one2one)
     for ids, masks in data_loader:
-        print(ids)
-        print(masks)
-        break
+        ids = ids.to('cuda')
+        masks = masks.to('cuda')
