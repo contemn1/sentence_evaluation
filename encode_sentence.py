@@ -18,6 +18,7 @@ import os
 from dataset.custom_dataset import TextIndexDataset
 from pytorch_pretrained_bert import BertTokenizer
 from torch.utils.data import DataLoader
+from pytorch_pretrained_bert import BertModel
 
 def load_sentences(file_path):
     try:
@@ -270,6 +271,16 @@ if __name__ == '__main__':
     dataset = TextIndexDataset(first, tokenizer, True)
     data_loader = DataLoader(dataset, batch_size=72, num_workers=4,
                              collate_fn=dataset.collate_fn_one2one)
+    model = BertModel.from_pretrained('bert-base-uncased')
+    model.eval()
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    result = []
     for ids, masks in data_loader:
-        ids = ids.to('cuda')
-        masks = masks.to('cuda')
+        ids.to(device)
+        masks.to(device)
+        encoded_layers, _ = model(ids, attention_mask=masks,
+                                  output_all_encoded_layers=False)
+        average_embeddings = torch.mean(encoded_layers, dim=1) #torch.Tensor
+        result.append(average_embeddings.detach().cpu())
+    result = np.vstack(result)
+    print(result)
