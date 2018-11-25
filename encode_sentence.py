@@ -290,5 +290,6 @@ if __name__ == '__main__':
             average_embeddings = torch.mean(encoded_layers, dim=1) #torch.Tensor
             result.append(average_embeddings.detach().cpu())
         result = np.vstack(result)
-        final_result = output_results(result, accuracy_function[index])
+        final_result = output_results(result,
+                                      calculate_accuracy=accuracy_function[index])
         print(final_result)
