@@ -284,3 +284,10 @@ if __name__ == '__main__':
         result.append(average_embeddings.detach().cpu())
     result = np.vstack(result)
     output_results(result)
+    print("result of infersent is: ")
+    infer_sent_result = output_results(
+        get_embedding_from_infersent(model_path)(first),
+        calculate_accuracy=normal_accuracy,
+        verbose=True,
+        output_path="infersent_clause_relatedness")
+    
