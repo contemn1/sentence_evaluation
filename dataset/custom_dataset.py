@@ -27,7 +27,6 @@ class TextIndexDataset(Dataset):
         sequence_lengths = np.array([len(ele) for ele in batch_ids])
         padded_batch_ids = pad(batch_ids, sequence_lengths,
                                0)  # type: torch.Tensor
-        print(padded_batch_ids.dtype)
         input_masks = padded_batch_ids > 0
         return padded_batch_ids, input_masks
 
