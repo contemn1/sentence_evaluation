@@ -20,6 +20,7 @@ from pytorch_pretrained_bert import BertTokenizer
 from torch.utils.data import DataLoader
 from pytorch_pretrained_bert import BertModel
 
+
 def load_sentences(file_path):
     try:
         with open(file_path, encoding="utf8") as file:
@@ -122,9 +123,9 @@ def get_embedding_from_glove(glove_path, power=1):
     return get_embedding
 
 
-def get_embedding_from_infersent(model_path, batch_size=128, use_cuda=True):
+def get_embedding_from_infersent(model_path, glove_path, batch_size=128, use_cuda=True):
     def get_infersent_embedding(sentences):
-        model = resume_model(model_path, use_cuda=use_cuda)
+        model = resume_model(model_path, glove_path, use_cuda=use_cuda)
         return model.encode(sentences, bsize=batch_size, tokenize=True,
                             verbose=True)
 
@@ -283,11 +284,10 @@ if __name__ == '__main__':
         average_embeddings = torch.mean(encoded_layers, dim=1) #torch.Tensor
         result.append(average_embeddings.detach().cpu())
     result = np.vstack(result)
-    output_results(result)
+    print(output_results(result))
     print("result of infersent is: ")
     infer_sent_result = output_results(
-        get_embedding_from_infersent(model_path)(first),
+        get_embedding_from_infersent(model_path, glove_path)(first),
         calculate_accuracy=normal_accuracy,
         verbose=True,
         output_path="infersent_clause_relatedness")
-    
