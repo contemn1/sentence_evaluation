@@ -269,7 +269,7 @@ if __name__ == '__main__':
     tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
     first = sentences_unfold(file_path_list[0], delimiter="\t")
     dataset = TextIndexDataset(first, tokenizer, True)
-    data_loader = DataLoader(dataset, batch_size=72, num_workers=4,
+    data_loader = DataLoader(dataset, batch_size=144, num_workers=4,
                              collate_fn=dataset.collate_fn_one2one)
     model = BertModel.from_pretrained('bert-base-uncased')
     model.eval()
