@@ -1,4 +1,4 @@
-from models import BLSTMEncoder
+from models import InferSent
 import numpy as np
 import logging
 import json
@@ -43,11 +43,13 @@ def read_file(file_path, encoding="utf-8", preprocess=lambda x: x):
 
 
 def resume_model(model_path, glove_path, use_cuda=False):
+    V=2
     location_function = None if use_cuda else lambda storage, loc: storage
-    model = torch.load(model_path,
-                       map_location=location_function)  # type: BLSTMEncoder
-    model.set_glove_path(glove_path)
-    model.build_vocab_k_words(K=100000)
+    params_model = {'bsize': 64, 'word_emb_dim': 300, 'enc_lstm_dim': 2048,
+                    'pool_type': 'max', 'dpout_model': 0.0, 'version': V}
+    infersent = InferSent(params_model)
+    infersent.load_state_dict(torch.load(model_path))
+    infersent.set_w2v_path(glove_path)
     return model
 
 
@@ -266,28 +268,27 @@ if __name__ == '__main__':
     file_name_list = ["negation_detection.txt", "negation_variant.txt",
                       "argument_sensitivity.txt", "clause_relatedness.txt",
                       "fixed_point_inversion.txt"]
+    accuracy_function = [normal_accuracy, negation_variant_accuracy,
+                         normal_accuracy, normal_accuracy,
+                         normal_accuracy]
     file_path_list = [os.path.join(data_path, ele) for ele in file_name_list]
     tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
     model = BertModel.from_pretrained('bert-base-uncased')
     model.eval()
-    first = sentences_unfold(file_path_list[0], delimiter="\t")
-    dataset = TextIndexDataset(first, tokenizer, True)
-    data_loader = DataLoader(dataset, batch_size=144, num_workers=4,
-                             collate_fn=dataset.collate_fn_one2one)
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    result = []
-    for ids, masks in data_loader:
-        ids.to(device)
-        masks.to(device)
-        encoded_layers, _ = model(ids, attention_mask=masks,
-                                  output_all_encoded_layers=False)
-        average_embeddings = torch.mean(encoded_layers, dim=1) #torch.Tensor
-        result.append(average_embeddings.detach().cpu())
-    result = np.vstack(result)
-    print(output_results(result))
-    print("result of infersent is: ")
-    infer_sent_result = output_results(
-        get_embedding_from_infersent(model_path, glove_path)(first),
-        calculate_accuracy=normal_accuracy,
-        verbose=True,
-        output_path="infersent_clause_relatedness")
+    for index, path in enumerate(file_path_list):
+        first = sentences_unfold(path, delimiter="\t")
+        dataset = TextIndexDataset(first, tokenizer, True)
+        data_loader = DataLoader(dataset, batch_size=144, num_workers=4,
+                                 collate_fn=dataset.collate_fn_one2one)
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        result = []
+        for ids, masks in data_loader:
+            ids.to(device)
+            masks.to(device)
+            encoded_layers, _ = model(ids, attention_mask=masks,
+                                      output_all_encoded_layers=False)
+            average_embeddings = torch.mean(encoded_layers, dim=1) #torch.Tensor
+            result.append(average_embeddings.detach().cpu())
+        result = np.vstack(result)
+        final_result = output_results(result, accuracy_function[index])
+        print(final_result)
