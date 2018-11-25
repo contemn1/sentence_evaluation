@@ -18,183 +18,183 @@ Theo admires Isabelle	Isabelle is admired by Theo	Isabelle admires Theo
 Molly admires Chloe	Chloe is admired by Molly	Chloe admires Molly
 Felix admires Hollie	Hollie is admired by Felix	Hollie admires Felix
 Louie admires Jackson	Jackson is admired by Louie	Jackson admires Louie
-Louis ask Olivia to boil noodles	Olivia is asked to boil noodles	Olivia ask Louis to boil noodles
-Louis ask Olivia to adjust the telescope	Olivia is asked to adjust the telescope	Olivia ask Louis to adjust the telescope
-Louis ask Olivia to adjust the camera	Olivia is asked to adjust the camera	Olivia ask Louis to adjust the camera
-James ask Dexter to climb a hill	Dexter is asked to climb a hill	Dexter ask James to climb a hill
-James ask Dexter to start a street race in New York City	Dexter is asked to start a street race in New York City	Dexter ask James to start a street race in New York City
-James ask Dexter to boil water for tea	Dexter is asked to boil water for tea	Dexter ask James to boil water for tea
-Austin ask Sophia to go for lunch	Sophia is asked to go for lunch	Sophia ask Austin to go for lunch
-Austin ask Sophia to compete in a match	Sophia is asked to compete in a match	Sophia ask Austin to compete in a match
-Austin ask Sophia to balance on a unicycle	Sophia is asked to balance on a unicycle	Sophia ask Austin to balance on a unicycle
-Ibrahim ask Daisy to approach a parachute to gather it up	Daisy is asked to approach a parachute to gather it up	Daisy ask Ibrahim to approach a parachute to gather it up
-Ibrahim ask Daisy to adjust the clothing of her child	Daisy is asked to adjust the clothing of her child	Daisy ask Ibrahim to adjust the clothing of her child
-Ibrahim ask Daisy to bake muffins	Daisy is asked to bake muffins	Daisy ask Ibrahim to bake muffins
-Eliza ask Lily to balance on a spinning wheel	Lily is asked to balance on a spinning wheel	Lily ask Eliza to balance on a spinning wheel
-Eliza ask Lily to make a movie	Lily is asked to make a movie	Lily ask Eliza to make a movie
-Eliza ask Lily to bake for a bake sale	Lily is asked to bake for a bake sale	Lily ask Eliza to bake for a bake sale
-Sonny ask Amelie to begin jogging outside	Amelie is asked to begin jogging outside	Amelie ask Sonny to begin jogging outside
-Sonny ask Amelie to perform a dance	Amelie is asked to perform a dance	Amelie ask Sonny to perform a dance
-Sonny ask Amelie to climb a roof	Amelie is asked to climb a roof	Amelie ask Sonny to climb a roof
-Harley ask Abigail to bake some muffins	Abigail is asked to bake some muffins	Abigail ask Harley to bake some muffins
-Harley ask Abigail to bake in the oven	Abigail is asked to bake in the oven	Abigail ask Harley to bake in the oven
-Harley ask Abigail to boil an egg	Abigail is asked to boil an egg	Abigail ask Harley to boil an egg
-Megan ask Georgia to bake pizza	Georgia is asked to bake pizza	Georgia ask Megan to bake pizza
-Megan ask Georgia to a barbeque	Georgia is asked to a barbeque	Georgia ask Megan to a barbeque
-Megan ask Georgia to make a pizza	Georgia is asked to make a pizza	Georgia ask Megan to make a pizza
-Kai ask Seth to bake in the kitchen	Seth is asked to bake in the kitchen	Seth ask Kai to bake in the kitchen
-Kai ask Seth to balance on a structure	Seth is asked to balance on a structure	Seth ask Kai to balance on a structure
-Kai ask Seth to make a pizza	Seth is asked to make a pizza	Seth ask Kai to make a pizza
-Lacey ask Dylan to bake dinner	Dylan is asked to bake dinner	Dylan ask Lacey to bake dinner
-Lacey ask Dylan to adjust the clothing of a woman in a white sundress	Dylan is asked to adjust the clothing of a woman in a white sundress	Dylan ask Lacey to adjust the clothing of a woman in a white sundress
-Lacey ask Dylan to go for lunch	Dylan is asked to go for lunch	Dylan ask Lacey to go for lunch
-Owen teach Riley to compete in a match	Riley is teached to compete in a match	Riley teach Owen to compete in a match
-Owen teach Riley to boil hot	Riley is teached to boil hot	Riley teach Owen to boil hot
-Owen teach Riley to boil over a campfire	Riley is teached to boil over a campfire	Riley teach Owen to boil over a campfire
-Sofia teach Charlie to go skydiving	Charlie is teached to go skydiving	Charlie teach Sofia to go skydiving
-Sofia teach Charlie to accept an award from the woman	Charlie is teached to accept an award from the woman	Charlie teach Sofia to accept an award from the woman
-Sofia teach Charlie to adjust the bike seat for his young son	Charlie is teached to adjust the bike seat for his young son	Charlie teach Sofia to adjust the bike seat for his young son
-Mason teach Heidi to adjust their favorite grill on a bicycle	Heidi is teached to adjust their favorite grill on a bicycle	Heidi teach Mason to adjust their favorite grill on a bicycle
-Mason teach Heidi to adjust the flame of a blowtorch	Heidi is teached to adjust the flame of a blowtorch	Heidi teach Mason to adjust the flame of a blowtorch
-Mason teach Heidi to bake in a kitchen	Heidi is teached to bake in a kitchen	Heidi teach Mason to bake in a kitchen
-Zara teach Lewis to leave on a road trip	Lewis is teached to leave on a road trip	Lewis teach Zara to leave on a road trip
-Zara teach Lewis to balance on a surfboard	Lewis is teached to balance on a surfboard	Lewis teach Zara to balance on a surfboard
-Zara teach Lewis to adjust the mosquito net	Lewis is teached to adjust the mosquito net	Lewis teach Zara to adjust the mosquito net
-Jack teach Tyler to boil meat	Tyler is teached to boil meat	Tyler teach Jack to boil meat
-Jack teach Tyler to accept an award from the woman	Tyler is teached to accept an award from the woman	Tyler teach Jack to accept an award from the woman
-Jack teach Tyler to adjust the bike	Tyler is teached to adjust the bike	Tyler teach Jack to adjust the bike
-Francesca teach Adam to adjust the microphone on his stage	Adam is teached to adjust the microphone on his stage	Adam teach Francesca to adjust the microphone on his stage
-Francesca teach Adam to balance on a structure	Adam is teached to balance on a structure	Adam teach Francesca to balance on a structure
-Francesca teach Adam to start a race or organized walk of some sort	Adam is teached to start a race or organized walk of some sort	Adam teach Francesca to start a race or organized walk of some sort
-Muhammad teach Amy to adjust the clothing of her child	Amy is teached to adjust the clothing of her child	Amy teach Muhammad to adjust the clothing of her child
-Muhammad teach Amy to balance on a rope in public with silver boots	Amy is teached to balance on a rope in public with silver boots	Amy teach Muhammad to balance on a rope in public with silver boots
-Muhammad teach Amy to bake some cookies	Amy is teached to bake some cookies	Amy teach Muhammad to bake some cookies
-Jessica teach Harley to adjust the mosquito net	Harley is teached to adjust the mosquito net	Harley teach Jessica to adjust the mosquito net
-Jessica teach Harley to climb the rock formation	Harley is teached to climb the rock formation	Harley teach Jessica to climb the rock formation
-Jessica teach Harley to start a game of chess	Harley is teached to start a game of chess	Harley teach Jessica to start a game of chess
-Sophie teach Jessica to adjust the bike seat for his young son	Jessica is teached to adjust the bike seat for his young son	Jessica teach Sophie to adjust the bike seat for his young son
-Sophie teach Jessica to approach a parachute to gather it up	Jessica is teached to approach a parachute to gather it up	Jessica teach Sophie to approach a parachute to gather it up
-Sophie teach Jessica to attempt a trick on the motorcycle	Jessica is teached to attempt a trick on the motorcycle	Jessica teach Sophie to attempt a trick on the motorcycle
-Thea teach Adam to go for lunch	Adam is teached to go for lunch	Adam teach Thea to go for lunch
-Thea teach Adam to go for lunch	Adam is teached to go for lunch	Adam teach Thea to go for lunch
-Thea teach Adam to start a protest	Adam is teached to start a protest	Adam teach Thea to start a protest
-Victoria allow Heidi to boil water	Heidi is allowed to boil water	Heidi allow Victoria to boil water
-Victoria allow Heidi to accept an award in front of an audiance on stage	Heidi is allowed to accept an award in front of an audiance on stage	Heidi allow Victoria to accept an award in front of an audiance on stage
-Victoria allow Heidi to boil meat	Heidi is allowed to boil meat	Heidi allow Victoria to boil meat
-Summer allow Eleanor to boil hot	Eleanor is allowed to boil hot	Eleanor allow Summer to boil hot
-Summer allow Eleanor to boil noodles	Eleanor is allowed to boil noodles	Eleanor allow Summer to boil noodles
-Summer allow Eleanor to approach a parachute to gather it up	Eleanor is allowed to approach a parachute to gather it up	Eleanor allow Summer to approach a parachute to gather it up
-Amy allow Edward to boil over a campfire	Edward is allowed to boil over a campfire	Edward allow Amy to boil over a campfire
-Amy allow Edward to climb the mountain naked	Edward is allowed to climb the mountain naked	Edward allow Amy to climb the mountain naked
-Amy allow Edward to adjust their favorite grill on a bicycle	Edward is allowed to adjust their favorite grill on a bicycle	Edward allow Amy to adjust their favorite grill on a bicycle
-Lily allow Georgia to accept an award from the woman	Georgia is allowed to accept an award from the woman	Georgia allow Lily to accept an award from the woman
-Lily allow Georgia to bake for a bake sale	Georgia is allowed to bake for a bake sale	Georgia allow Lily to bake for a bake sale
-Lily allow Georgia to start a game of chess	Georgia is allowed to start a game of chess	Georgia allow Lily to start a game of chess
-Bella allow Joey to bake cupcakes outside	Joey is allowed to bake cupcakes outside	Joey allow Bella to bake cupcakes outside
-Bella allow Joey to bake cupcakes in the kitchen	Joey is allowed to bake cupcakes in the kitchen	Joey allow Bella to bake cupcakes in the kitchen
-Bella allow Joey to bake dog biscuits	Joey is allowed to bake dog biscuits	Joey allow Bella to bake dog biscuits
-Matilda allow Darcie to bake some muffins	Darcie is allowed to bake some muffins	Darcie allow Matilda to bake some muffins
-Matilda allow Darcie to start a project	Darcie is allowed to start a project	Darcie allow Matilda to start a project
-Matilda allow Darcie to start a soccer competition	Darcie is allowed to start a soccer competition	Darcie allow Matilda to start a soccer competition
-Jude allow Freya to adjust the clothes of another woman	Freya is allowed to adjust the clothes of another woman	Freya allow Jude to adjust the clothes of another woman
-Jude allow Freya to approach a person	Freya is allowed to approach a person	Freya allow Jude to approach a person
-Jude allow Freya to bake dog biscuits	Freya is allowed to bake dog biscuits	Freya allow Jude to bake dog biscuits
-Lydia allow Harper to bake red velvet cake	Harper is allowed to bake red velvet cake	Harper allow Lydia to bake red velvet cake
-Lydia allow Harper to adjust the grill on a bicycle	Harper is allowed to adjust the grill on a bicycle	Harper allow Lydia to adjust the grill on a bicycle
-Lydia allow Harper to eat dinner together	Harper is allowed to eat dinner together	Harper allow Lydia to eat dinner together
-Beatrice allow Isabelle to climb the mountain naked	Isabelle is allowed to climb the mountain naked	Isabelle allow Beatrice to climb the mountain naked
-Beatrice allow Isabelle to leave on a road trip	Isabelle is allowed to leave on a road trip	Isabelle allow Beatrice to leave on a road trip
-Beatrice allow Isabelle to boil water for tea	Isabelle is allowed to boil water for tea	Isabelle allow Beatrice to boil water for tea
-Finlay allow Sophie to catch a big fish	Sophie is allowed to catch a big fish	Sophie allow Finlay to catch a big fish
-Finlay allow Sophie to climb the mountain naked	Sophie is allowed to climb the mountain naked	Sophie allow Finlay to climb the mountain naked
-Finlay allow Sophie to bake in a kitchen	Sophie is allowed to bake in a kitchen	Sophie allow Finlay to bake in a kitchen
-Esme encourage Poppy to make a movie	Poppy is encouraged to make a movie	Poppy encourage Esme to make a movie
-Esme encourage Poppy to adjust the radio in the car	Poppy is encouraged to adjust the radio in the car	Poppy encourage Esme to adjust the radio in the car
-Esme encourage Poppy to attempt a trick on the motorbike	Poppy is encouraged to attempt a trick on the motorbike	Poppy encourage Esme to attempt a trick on the motorbike
-Amy encourage Isabella to accept an award from the woman	Isabella is encouraged to accept an award from the woman	Isabella encourage Amy to accept an award from the woman
-Amy encourage Isabella to balance on a unicycle	Isabella is encouraged to balance on a unicycle	Isabella encourage Amy to balance on a unicycle
-Amy encourage Isabella to start a presentation	Isabella is encouraged to start a presentation	Isabella encourage Amy to start a presentation
-Oscar encourage Gabriel to bake some bread	Gabriel is encouraged to bake some bread	Gabriel encourage Oscar to bake some bread
-Oscar encourage Gabriel to balance on a spinning wheel	Gabriel is encouraged to balance on a spinning wheel	Gabriel encourage Oscar to balance on a spinning wheel
-Oscar encourage Gabriel to leave the starting line	Gabriel is encouraged to leave the starting line	Gabriel encourage Oscar to leave the starting line
-Darcy encourage William to adjust the telescope	William is encouraged to adjust the telescope	William encourage Darcy to adjust the telescope
-Darcy encourage William to attempt a trick on the motorcycle	William is encouraged to attempt a trick on the motorcycle	William encourage Darcy to attempt a trick on the motorcycle
-Darcy encourage William to perform a dance	William is encouraged to perform a dance	William encourage Darcy to perform a dance
-Matilda encourage Isabelle to compete in a race	Isabelle is encouraged to compete in a race	Isabelle encourage Matilda to compete in a race
-Matilda encourage Isabelle to balance on a rope	Isabelle is encouraged to balance on a rope	Isabelle encourage Matilda to balance on a rope
-Matilda encourage Isabelle to adjust things before swimming	Isabelle is encouraged to adjust things before swimming	Isabelle encourage Matilda to adjust things before swimming
-Beatrice encourage Sophia to adjust the microphone on his stage	Sophia is encouraged to adjust the microphone on his stage	Sophia encourage Beatrice to adjust the microphone on his stage
-Beatrice encourage Sophia to begin playing his guitar on stage	Sophia is encouraged to begin playing his guitar on stage	Sophia encourage Beatrice to begin playing his guitar on stage
-Beatrice encourage Sophia to adjust the flame of a blowtorch	Sophia is encouraged to adjust the flame of a blowtorch	Sophia encourage Beatrice to adjust the flame of a blowtorch
-Thomas encourage Alice to adjust the grill on a bicycle	Alice is encouraged to adjust the grill on a bicycle	Alice encourage Thomas to adjust the grill on a bicycle
-Thomas encourage Alice to catch a big fish	Alice is encouraged to catch a big fish	Alice encourage Thomas to catch a big fish
-Thomas encourage Alice to attempt a trick on the water skis	Alice is encouraged to attempt a trick on the water skis	Alice encourage Thomas to attempt a trick on the water skis
-Jamie encourage Benjamin to adjust the bike	Benjamin is encouraged to adjust the bike	Benjamin encourage Jamie to adjust the bike
-Jamie encourage Benjamin to bake in the oven	Benjamin is encouraged to bake in the oven	Benjamin encourage Jamie to bake in the oven
-Jamie encourage Benjamin to leave the starting line	Benjamin is encouraged to leave the starting line	Benjamin encourage Jamie to leave the starting line
-Jackson encourage Maya to catch a big fish	Maya is encouraged to catch a big fish	Maya encourage Jackson to catch a big fish
-Jackson encourage Maya to attempt a trick on the snowboard	Maya is encouraged to attempt a trick on the snowboard	Maya encourage Jackson to attempt a trick on the snowboard
-Jackson encourage Maya to start a presentation	Maya is encouraged to start a presentation	Maya encourage Jackson to start a presentation
-Frankie encourage Amber to catch a big fish	Amber is encouraged to catch a big fish	Amber encourage Frankie to catch a big fish
-Frankie encourage Amber to adjust the telescope	Amber is encouraged to adjust the telescope	Amber encourage Frankie to adjust the telescope
-Frankie encourage Amber to approach a motorcycle in the extreme foreground	Amber is encouraged to approach a motorcycle in the extreme foreground	Amber encourage Frankie to approach a motorcycle in the extreme foreground
-Alex persuade Bobby to adjust the radio in the car	Bobby is persuaded to adjust the radio in the car	Bobby persuade Alex to adjust the radio in the car
-Alex persuade Bobby to balance on a rope	Bobby is persuaded to balance on a rope	Bobby persuade Alex to balance on a rope
-Alex persuade Bobby to adjust the grill on a bicycle	Bobby is persuaded to adjust the grill on a bicycle	Bobby persuade Alex to adjust the grill on a bicycle
-Maya persuade Tyler to bake for a bake sale	Tyler is persuaded to bake for a bake sale	Tyler persuade Maya to bake for a bake sale
-Maya persuade Tyler to start a fight	Tyler is persuaded to start a fight	Tyler persuade Maya to start a fight
-Maya persuade Tyler to leave on a road trip	Tyler is persuaded to leave on a road trip	Tyler persuade Maya to leave on a road trip
-Emily persuade Michael to begin praying when they return home	Michael is persuaded to begin praying when they return home	Michael persuade Emily to begin praying when they return home
-Emily persuade Michael to attempt a trick on the motorbike	Michael is persuaded to attempt a trick on the motorbike	Michael persuade Emily to attempt a trick on the motorbike
-Emily persuade Michael to compete in a match	Michael is persuaded to compete in a match	Michael persuade Emily to compete in a match
-Reuben persuade Zoe to start a race or organized walk of some sort	Zoe is persuaded to start a race or organized walk of some sort	Zoe persuade Reuben to start a race or organized walk of some sort
-Reuben persuade Zoe to adjust the radio in the car	Zoe is persuaded to adjust the radio in the car	Zoe persuade Reuben to adjust the radio in the car
-Reuben persuade Zoe to balance on a spinning wheel	Zoe is persuaded to balance on a spinning wheel	Zoe persuade Reuben to balance on a spinning wheel
-Oliver persuade Amelie to balance on a rope	Amelie is persuaded to balance on a rope	Amelie persuade Oliver to balance on a rope
-Oliver persuade Amelie to begin jogging outside	Amelie is persuaded to begin jogging outside	Amelie persuade Oliver to begin jogging outside
-Oliver persuade Amelie to accept an award in front of an audiance on stage	Amelie is persuaded to accept an award in front of an audiance on stage	Amelie persuade Oliver to accept an award in front of an audiance on stage
-Chloe persuade Grace to start a protest	Grace is persuaded to start a protest	Grace persuade Chloe to start a protest
-Chloe persuade Grace to boil water for tea	Grace is persuaded to boil water for tea	Grace persuade Chloe to boil water for tea
-Chloe persuade Grace to boil an egg	Grace is persuaded to boil an egg	Grace persuade Chloe to boil an egg
-Mohammad persuade Elsie to approach a seagull	Elsie is persuaded to approach a seagull	Elsie persuade Mohammad to approach a seagull
-Mohammad persuade Elsie to adjust the grill on a bicycle	Elsie is persuaded to adjust the grill on a bicycle	Elsie persuade Mohammad to adjust the grill on a bicycle
-Mohammad persuade Elsie to boil over a stove	Elsie is persuaded to boil over a stove	Elsie persuade Mohammad to boil over a stove
-Thomas persuade Rory to just the bride	Rory is persuaded to just the bride	Rory persuade Thomas to just the bride
-Thomas persuade Rory to start a street race in New York City	Rory is persuaded to start a street race in New York City	Rory persuade Thomas to start a street race in New York City
-Thomas persuade Rory to bake some food	Rory is persuaded to bake some food	Rory persuade Thomas to bake some food
-Georgia persuade Albert to bake shish kabobs in the oven	Albert is persuaded to bake shish kabobs in the oven	Albert persuade Georgia to bake shish kabobs in the oven
-Georgia persuade Albert to bake in the oven	Albert is persuaded to bake in the oven	Albert persuade Georgia to bake in the oven
-Georgia persuade Albert to balance on a structure	Albert is persuaded to balance on a structure	Albert persuade Georgia to balance on a structure
-Evelyn persuade Nathan to climb the rock formation	Nathan is persuaded to climb the rock formation	Nathan persuade Evelyn to climb the rock formation
-Evelyn persuade Nathan to balance on a spinning wheel	Nathan is persuaded to balance on a spinning wheel	Nathan persuade Evelyn to balance on a spinning wheel
-Evelyn persuade Nathan to adjust the flame of a blowtorch	Nathan is persuaded to adjust the flame of a blowtorch	Nathan persuade Evelyn to adjust the flame of a blowtorch
-Evie command Callum to adjust the clothing of her child	Callum is commanded to adjust the clothing of her child	Callum command Evie to adjust the clothing of her child
-Evie command Callum to bake indoors	Callum is commanded to bake indoors	Callum command Evie to bake indoors
-Evie command Callum to just the bride	Callum is commanded to just the bride	Callum command Evie to just the bride
-Lacey command Molly to adjust the grill on a bicycle	Molly is commanded to adjust the grill on a bicycle	Molly command Lacey to adjust the grill on a bicycle
-Lacey command Molly to boil over a campfire	Molly is commanded to boil over a campfire	Molly command Lacey to boil over a campfire
-Lacey command Molly to bake in the kitchen	Molly is commanded to bake in the kitchen	Molly command Lacey to bake in the kitchen
-Olivia command Emma to go skydiving	Emma is commanded to go skydiving	Emma command Olivia to go skydiving
-Olivia command Emma to leave the room	Emma is commanded to leave the room	Emma command Olivia to leave the room
-Olivia command Emma to adjust the camera	Emma is commanded to adjust the camera	Emma command Olivia to adjust the camera
-Katie command Faith to approach a parachute to gather it up	Faith is commanded to approach a parachute to gather it up	Faith command Katie to approach a parachute to gather it up
-Katie command Faith to accept an award in front of an audiance on stage	Faith is commanded to accept an award in front of an audiance on stage	Faith command Katie to accept an award in front of an audiance on stage
-Katie command Faith to leave on a road trip	Faith is commanded to leave on a road trip	Faith command Katie to leave on a road trip
-Sebastian command Lydia to bake in the oven	Lydia is commanded to bake in the oven	Lydia command Sebastian to bake in the oven
-Sebastian command Lydia to boil an egg	Lydia is commanded to boil an egg	Lydia command Sebastian to boil an egg
-Sebastian command Lydia to adjust the camera	Lydia is commanded to adjust the camera	Lydia command Sebastian to adjust the camera
-Henry command Lottie to adjust the bike	Lottie is commanded to adjust the bike	Lottie command Henry to adjust the bike
-Henry command Lottie to perform a demonstration	Lottie is commanded to perform a demonstration	Lottie command Henry to perform a demonstration
-Henry command Lottie to adjust the clothing of her child	Lottie is commanded to adjust the clothing of her child	Lottie command Henry to adjust the clothing of her child
-Jessica command Julia to boil an egg	Julia is commanded to boil an egg	Julia command Jessica to boil an egg
-Jessica command Julia to boil noodles	Julia is commanded to boil noodles	Julia command Jessica to boil noodles
-Jessica command Julia to boil over a stove	Julia is commanded to boil over a stove	Julia command Jessica to boil over a stove
-Jude command Jacob to bake chocolate chip cookies	Jacob is commanded to bake chocolate chip cookies	Jacob command Jude to bake chocolate chip cookies
-Jude command Jacob to perform a demonstration	Jacob is commanded to perform a demonstration	Jacob command Jude to perform a demonstration
-Jude command Jacob to approach a person	Jacob is commanded to approach a person	Jacob command Jude to approach a person
-Dylan command Zoe to adjust the flame of a blowtorch	Zoe is commanded to adjust the flame of a blowtorch	Zoe command Dylan to adjust the flame of a blowtorch
-Dylan command Zoe to adjust the clothing of her child	Zoe is commanded to adjust the clothing of her child	Zoe command Dylan to adjust the clothing of her child
-Dylan command Zoe to approach a parachute to gather it up	Zoe is commanded to approach a parachute to gather it up	Zoe command Dylan to approach a parachute to gather it up
-Logan command Willow to begin playing his guitar on stage	Willow is commanded to begin playing his guitar on stage	Willow command Logan to begin playing his guitar on stage
-Logan command Willow to attempt a trick on the water skis	Willow is commanded to attempt a trick on the water skis	Willow command Logan to attempt a trick on the water skis
-Logan command Willow to start a protest	Willow is commanded to start a protest	Willow command Logan to start a protest
+Louis asks Olivia to boil noodles	Olivia is asked to boil noodles	Olivia asks Louis to boil noodles
+Louis asks Olivia to adjust the telescope	Olivia is asked to adjust the telescope	Olivia asks Louis to adjust the telescope
+Louis asks Olivia to adjust the camera	Olivia is asked to adjust the camera	Olivia asks Louis to adjust the camera
+James asks Dexter to climb a hill	Dexter is asked to climb a hill	Dexter asks James to climb a hill
+James asks Dexter to start a street race in New York City	Dexter is asked to start a street race in New York City	Dexter asks James to start a street race in New York City
+James asks Dexter to boil water for tea	Dexter is asked to boil water for tea	Dexter asks James to boil water for tea
+Austin asks Sophia to go for lunch	Sophia is asked to go for lunch	Sophia asks Austin to go for lunch
+Austin asks Sophia to compete in a match	Sophia is asked to compete in a match	Sophia asks Austin to compete in a match
+Austin asks Sophia to balance on a unicycle	Sophia is asked to balance on a unicycle	Sophia asks Austin to balance on a unicycle
+Ibrahim asks Daisy to approach a parachute to gather it up	Daisy is asked to approach a parachute to gather it up	Daisy asks Ibrahim to approach a parachute to gather it up
+Ibrahim asks Daisy to adjust the clothing of her child	Daisy is asked to adjust the clothing of her child	Daisy asks Ibrahim to adjust the clothing of her child
+Ibrahim asks Daisy to bake muffins	Daisy is asked to bake muffins	Daisy asks Ibrahim to bake muffins
+Eliza asks Lily to balance on a spinning wheel	Lily is asked to balance on a spinning wheel	Lily asks Eliza to balance on a spinning wheel
+Eliza asks Lily to make a movie	Lily is asked to make a movie	Lily asks Eliza to make a movie
+Eliza asks Lily to bake for a bake sale	Lily is asked to bake for a bake sale	Lily asks Eliza to bake for a bake sale
+Sonny asks Amelie to begin jogging outside	Amelie is asked to begin jogging outside	Amelie asks Sonny to begin jogging outside
+Sonny asks Amelie to perform a dance	Amelie is asked to perform a dance	Amelie asks Sonny to perform a dance
+Sonny asks Amelie to climb a roof	Amelie is asked to climb a roof	Amelie asks Sonny to climb a roof
+Harley asks Abigail to bake some muffins	Abigail is asked to bake some muffins	Abigail asks Harley to bake some muffins
+Harley asks Abigail to bake in the oven	Abigail is asked to bake in the oven	Abigail asks Harley to bake in the oven
+Harley asks Abigail to boil an egg	Abigail is asked to boil an egg	Abigail asks Harley to boil an egg
+Megan asks Georgia to bake pizza	Georgia is asked to bake pizza	Georgia asks Megan to bake pizza
+Megan asks Georgia to a barbeque	Georgia is asked to a barbeque	Georgia asks Megan to a barbeque
+Megan asks Georgia to make a pizza	Georgia is asked to make a pizza	Georgia asks Megan to make a pizza
+Kai asks Seth to bake in the kitchen	Seth is asked to bake in the kitchen	Seth asks Kai to bake in the kitchen
+Kai asks Seth to balance on a structure	Seth is asked to balance on a structure	Seth asks Kai to balance on a structure
+Kai asks Seth to make a pizza	Seth is asked to make a pizza	Seth asks Kai to make a pizza
+Lacey asks Dylan to bake dinner	Dylan is asked to bake dinner	Dylan asks Lacey to bake dinner
+Lacey asks Dylan to adjust the clothing of a woman in a white sundress	Dylan is asked to adjust the clothing of a woman in a white sundress	Dylan asks Lacey to adjust the clothing of a woman in a white sundress
+Lacey asks Dylan to go for lunch	Dylan is asked to go for lunch	Dylan asks Lacey to go for lunch
+Owen teaches Riley to compete in a match	Riley is taught to compete in a match	Riley teaches Owen to compete in a match
+Owen teaches Riley to boil hot	Riley is taught to boil hot	Riley teaches Owen to boil hot
+Owen teaches Riley to boil over a campfire	Riley is taught to boil over a campfire	Riley teaches Owen to boil over a campfire
+Sofia teaches Charlie to go skydiving	Charlie is taught to go skydiving	Charlie teaches Sofia to go skydiving
+Sofia teaches Charlie to accept an award from the woman	Charlie is taught to accept an award from the woman	Charlie teaches Sofia to accept an award from the woman
+Sofia teaches Charlie to adjust the bike seat for his young son	Charlie is taught to adjust the bike seat for his young son	Charlie teaches Sofia to adjust the bike seat for his young son
+Mason teaches Heidi to adjust their favorite grill on a bicycle	Heidi is taught to adjust their favorite grill on a bicycle	Heidi teaches Mason to adjust their favorite grill on a bicycle
+Mason teaches Heidi to adjust the flame of a blowtorch	Heidi is taught to adjust the flame of a blowtorch	Heidi teaches Mason to adjust the flame of a blowtorch
+Mason teaches Heidi to bake in a kitchen	Heidi is taught to bake in a kitchen	Heidi teaches Mason to bake in a kitchen
+Zara teaches Lewis to leave on a road trip	Lewis is taught to leave on a road trip	Lewis teaches Zara to leave on a road trip
+Zara teaches Lewis to balance on a surfboard	Lewis is taught to balance on a surfboard	Lewis teaches Zara to balance on a surfboard
+Zara teaches Lewis to adjust the mosquito net	Lewis is taught to adjust the mosquito net	Lewis teaches Zara to adjust the mosquito net
+Jack teaches Tyler to boil meat	Tyler is taught to boil meat	Tyler teaches Jack to boil meat
+Jack teaches Tyler to accept an award from the woman	Tyler is taught to accept an award from the woman	Tyler teaches Jack to accept an award from the woman
+Jack teaches Tyler to adjust the bike	Tyler is taught to adjust the bike	Tyler teaches Jack to adjust the bike
+Francesca teaches Adam to adjust the microphone on his stage	Adam is taught to adjust the microphone on his stage	Adam teaches Francesca to adjust the microphone on his stage
+Francesca teaches Adam to balance on a structure	Adam is taught to balance on a structure	Adam teaches Francesca to balance on a structure
+Francesca teaches Adam to start a race or organized walk of some sort	Adam is taught to start a race or organized walk of some sort	Adam teaches Francesca to start a race or organized walk of some sort
+Muhammad teaches Amy to adjust the clothing of her child	Amy is taught to adjust the clothing of her child	Amy teaches Muhammad to adjust the clothing of her child
+Muhammad teaches Amy to balance on a rope in public with silver boots	Amy is taught to balance on a rope in public with silver boots	Amy teaches Muhammad to balance on a rope in public with silver boots
+Muhammad teaches Amy to bake some cookies	Amy is taught to bake some cookies	Amy teaches Muhammad to bake some cookies
+Jessica teaches Harley to adjust the mosquito net	Harley is taught to adjust the mosquito net	Harley teaches Jessica to adjust the mosquito net
+Jessica teaches Harley to climb the rock formation	Harley is taught to climb the rock formation	Harley teaches Jessica to climb the rock formation
+Jessica teaches Harley to start a game of chess	Harley is taught to start a game of chess	Harley teaches Jessica to start a game of chess
+Sophie teaches Jessica to adjust the bike seat for his young son	Jessica is taught to adjust the bike seat for his young son	Jessica teaches Sophie to adjust the bike seat for his young son
+Sophie teaches Jessica to approach a parachute to gather it up	Jessica is taught to approach a parachute to gather it up	Jessica teaches Sophie to approach a parachute to gather it up
+Sophie teaches Jessica to attempt a trick on the motorcycle	Jessica is taught to attempt a trick on the motorcycle	Jessica teaches Sophie to attempt a trick on the motorcycle
+Thea teaches Adam to go for lunch	Adam is taught to go for lunch	Adam teaches Thea to go for lunch
+Thea teaches Adam to go for lunch	Adam is taught to go for lunch	Adam teaches Thea to go for lunch
+Thea teaches Adam to start a protest	Adam is taught to start a protest	Adam teaches Thea to start a protest
+Victoria allows Heidi to boil water	Heidi is allowed to boil water	Heidi allows Victoria to boil water
+Victoria allows Heidi to accept an award in front of an audiance on stage	Heidi is allowed to accept an award in front of an audiance on stage	Heidi allows Victoria to accept an award in front of an audiance on stage
+Victoria allows Heidi to boil meat	Heidi is allowed to boil meat	Heidi allows Victoria to boil meat
+Summer allows Eleanor to boil hot	Eleanor is allowed to boil hot	Eleanor allows Summer to boil hot
+Summer allows Eleanor to boil noodles	Eleanor is allowed to boil noodles	Eleanor allows Summer to boil noodles
+Summer allows Eleanor to approach a parachute to gather it up	Eleanor is allowed to approach a parachute to gather it up	Eleanor allows Summer to approach a parachute to gather it up
+Amy allows Edward to boil over a campfire	Edward is allowed to boil over a campfire	Edward allows Amy to boil over a campfire
+Amy allows Edward to climb the mountain naked	Edward is allowed to climb the mountain naked	Edward allows Amy to climb the mountain naked
+Amy allows Edward to adjust their favorite grill on a bicycle	Edward is allowed to adjust their favorite grill on a bicycle	Edward allows Amy to adjust their favorite grill on a bicycle
+Lily allows Georgia to accept an award from the woman	Georgia is allowed to accept an award from the woman	Georgia allows Lily to accept an award from the woman
+Lily allows Georgia to bake for a bake sale	Georgia is allowed to bake for a bake sale	Georgia allows Lily to bake for a bake sale
+Lily allows Georgia to start a game of chess	Georgia is allowed to start a game of chess	Georgia allows Lily to start a game of chess
+Bella allows Joey to bake cupcakes outside	Joey is allowed to bake cupcakes outside	Joey allows Bella to bake cupcakes outside
+Bella allows Joey to bake cupcakes in the kitchen	Joey is allowed to bake cupcakes in the kitchen	Joey allows Bella to bake cupcakes in the kitchen
+Bella allows Joey to bake dog biscuits	Joey is allowed to bake dog biscuits	Joey allows Bella to bake dog biscuits
+Matilda allows Darcie to bake some muffins	Darcie is allowed to bake some muffins	Darcie allows Matilda to bake some muffins
+Matilda allows Darcie to start a project	Darcie is allowed to start a project	Darcie allows Matilda to start a project
+Matilda allows Darcie to start a soccer competition	Darcie is allowed to start a soccer competition	Darcie allows Matilda to start a soccer competition
+Jude allows Freya to adjust the clothes of another woman	Freya is allowed to adjust the clothes of another woman	Freya allows Jude to adjust the clothes of another woman
+Jude allows Freya to approach a person	Freya is allowed to approach a person	Freya allows Jude to approach a person
+Jude allows Freya to bake dog biscuits	Freya is allowed to bake dog biscuits	Freya allows Jude to bake dog biscuits
+Lydia allows Harper to bake red velvet cake	Harper is allowed to bake red velvet cake	Harper allows Lydia to bake red velvet cake
+Lydia allows Harper to adjust the grill on a bicycle	Harper is allowed to adjust the grill on a bicycle	Harper allows Lydia to adjust the grill on a bicycle
+Lydia allows Harper to eat dinner together	Harper is allowed to eat dinner together	Harper allows Lydia to eat dinner together
+Beatrice allows Isabelle to climb the mountain naked	Isabelle is allowed to climb the mountain naked	Isabelle allows Beatrice to climb the mountain naked
+Beatrice allows Isabelle to leave on a road trip	Isabelle is allowed to leave on a road trip	Isabelle allows Beatrice to leave on a road trip
+Beatrice allows Isabelle to boil water for tea	Isabelle is allowed to boil water for tea	Isabelle allows Beatrice to boil water for tea
+Finlay allows Sophie to catch a big fish	Sophie is allowed to catch a big fish	Sophie allows Finlay to catch a big fish
+Finlay allows Sophie to climb the mountain naked	Sophie is allowed to climb the mountain naked	Sophie allows Finlay to climb the mountain naked
+Finlay allows Sophie to bake in a kitchen	Sophie is allowed to bake in a kitchen	Sophie allows Finlay to bake in a kitchen
+Esme encourages Poppy to make a movie	Poppy is encouraged to make a movie	Poppy encourages Esme to make a movie
+Esme encourages Poppy to adjust the radio in the car	Poppy is encouraged to adjust the radio in the car	Poppy encourages Esme to adjust the radio in the car
+Esme encourages Poppy to attempt a trick on the motorbike	Poppy is encouraged to attempt a trick on the motorbike	Poppy encourages Esme to attempt a trick on the motorbike
+Amy encourages Isabella to accept an award from the woman	Isabella is encouraged to accept an award from the woman	Isabella encourages Amy to accept an award from the woman
+Amy encourages Isabella to balance on a unicycle	Isabella is encouraged to balance on a unicycle	Isabella encourages Amy to balance on a unicycle
+Amy encourages Isabella to start a presentation	Isabella is encouraged to start a presentation	Isabella encourages Amy to start a presentation
+Oscar encourages Gabriel to bake some bread	Gabriel is encouraged to bake some bread	Gabriel encourages Oscar to bake some bread
+Oscar encourages Gabriel to balance on a spinning wheel	Gabriel is encouraged to balance on a spinning wheel	Gabriel encourages Oscar to balance on a spinning wheel
+Oscar encourages Gabriel to leave the starting line	Gabriel is encouraged to leave the starting line	Gabriel encourages Oscar to leave the starting line
+Darcy encourages William to adjust the telescope	William is encouraged to adjust the telescope	William encourages Darcy to adjust the telescope
+Darcy encourages William to attempt a trick on the motorcycle	William is encouraged to attempt a trick on the motorcycle	William encourages Darcy to attempt a trick on the motorcycle
+Darcy encourages William to perform a dance	William is encouraged to perform a dance	William encourages Darcy to perform a dance
+Matilda encourages Isabelle to compete in a race	Isabelle is encouraged to compete in a race	Isabelle encourages Matilda to compete in a race
+Matilda encourages Isabelle to balance on a rope	Isabelle is encouraged to balance on a rope	Isabelle encourages Matilda to balance on a rope
+Matilda encourages Isabelle to adjust things before swimming	Isabelle is encouraged to adjust things before swimming	Isabelle encourages Matilda to adjust things before swimming
+Beatrice encourages Sophia to adjust the microphone on his stage	Sophia is encouraged to adjust the microphone on his stage	Sophia encourages Beatrice to adjust the microphone on his stage
+Beatrice encourages Sophia to begin playing his guitar on stage	Sophia is encouraged to begin playing his guitar on stage	Sophia encourages Beatrice to begin playing his guitar on stage
+Beatrice encourages Sophia to adjust the flame of a blowtorch	Sophia is encouraged to adjust the flame of a blowtorch	Sophia encourages Beatrice to adjust the flame of a blowtorch
+Thomas encourages Alice to adjust the grill on a bicycle	Alice is encouraged to adjust the grill on a bicycle	Alice encourages Thomas to adjust the grill on a bicycle
+Thomas encourages Alice to catch a big fish	Alice is encouraged to catch a big fish	Alice encourages Thomas to catch a big fish
+Thomas encourages Alice to attempt a trick on the water skis	Alice is encouraged to attempt a trick on the water skis	Alice encourages Thomas to attempt a trick on the water skis
+Jamie encourages Benjamin to adjust the bike	Benjamin is encouraged to adjust the bike	Benjamin encourages Jamie to adjust the bike
+Jamie encourages Benjamin to bake in the oven	Benjamin is encouraged to bake in the oven	Benjamin encourages Jamie to bake in the oven
+Jamie encourages Benjamin to leave the starting line	Benjamin is encouraged to leave the starting line	Benjamin encourages Jamie to leave the starting line
+Jackson encourages Maya to catch a big fish	Maya is encouraged to catch a big fish	Maya encourages Jackson to catch a big fish
+Jackson encourages Maya to attempt a trick on the snowboard	Maya is encouraged to attempt a trick on the snowboard	Maya encourages Jackson to attempt a trick on the snowboard
+Jackson encourages Maya to start a presentation	Maya is encouraged to start a presentation	Maya encourages Jackson to start a presentation
+Frankie encourages Amber to catch a big fish	Amber is encouraged to catch a big fish	Amber encourages Frankie to catch a big fish
+Frankie encourages Amber to adjust the telescope	Amber is encouraged to adjust the telescope	Amber encourages Frankie to adjust the telescope
+Frankie encourages Amber to approach a motorcycle in the extreme foreground	Amber is encouraged to approach a motorcycle in the extreme foreground	Amber encourages Frankie to approach a motorcycle in the extreme foreground
+Alex persuades Bobby to adjust the radio in the car	Bobby is persuaded to adjust the radio in the car	Bobby persuades Alex to adjust the radio in the car
+Alex persuades Bobby to balance on a rope	Bobby is persuaded to balance on a rope	Bobby persuades Alex to balance on a rope
+Alex persuades Bobby to adjust the grill on a bicycle	Bobby is persuaded to adjust the grill on a bicycle	Bobby persuades Alex to adjust the grill on a bicycle
+Maya persuades Tyler to bake for a bake sale	Tyler is persuaded to bake for a bake sale	Tyler persuades Maya to bake for a bake sale
+Maya persuades Tyler to start a fight	Tyler is persuaded to start a fight	Tyler persuades Maya to start a fight
+Maya persuades Tyler to leave on a road trip	Tyler is persuaded to leave on a road trip	Tyler persuades Maya to leave on a road trip
+Emily persuades Michael to begin praying when they return home	Michael is persuaded to begin praying when they return home	Michael persuades Emily to begin praying when they return home
+Emily persuades Michael to attempt a trick on the motorbike	Michael is persuaded to attempt a trick on the motorbike	Michael persuades Emily to attempt a trick on the motorbike
+Emily persuades Michael to compete in a match	Michael is persuaded to compete in a match	Michael persuades Emily to compete in a match
+Reuben persuades Zoe to start a race or organized walk of some sort	Zoe is persuaded to start a race or organized walk of some sort	Zoe persuades Reuben to start a race or organized walk of some sort
+Reuben persuades Zoe to adjust the radio in the car	Zoe is persuaded to adjust the radio in the car	Zoe persuades Reuben to adjust the radio in the car
+Reuben persuades Zoe to balance on a spinning wheel	Zoe is persuaded to balance on a spinning wheel	Zoe persuades Reuben to balance on a spinning wheel
+Oliver persuades Amelie to balance on a rope	Amelie is persuaded to balance on a rope	Amelie persuades Oliver to balance on a rope
+Oliver persuades Amelie to begin jogging outside	Amelie is persuaded to begin jogging outside	Amelie persuades Oliver to begin jogging outside
+Oliver persuades Amelie to accept an award in front of an audiance on stage	Amelie is persuaded to accept an award in front of an audiance on stage	Amelie persuades Oliver to accept an award in front of an audiance on stage
+Chloe persuades Grace to start a protest	Grace is persuaded to start a protest	Grace persuades Chloe to start a protest
+Chloe persuades Grace to boil water for tea	Grace is persuaded to boil water for tea	Grace persuades Chloe to boil water for tea
+Chloe persuades Grace to boil an egg	Grace is persuaded to boil an egg	Grace persuades Chloe to boil an egg
+Mohammad persuades Elsie to approach a seagull	Elsie is persuaded to approach a seagull	Elsie persuades Mohammad to approach a seagull
+Mohammad persuades Elsie to adjust the grill on a bicycle	Elsie is persuaded to adjust the grill on a bicycle	Elsie persuades Mohammad to adjust the grill on a bicycle
+Mohammad persuades Elsie to boil over a stove	Elsie is persuaded to boil over a stove	Elsie persuades Mohammad to boil over a stove
+Thomas persuades Rory to just the bride	Rory is persuaded to just the bride	Rory persuades Thomas to just the bride
+Thomas persuades Rory to start a street race in New York City	Rory is persuaded to start a street race in New York City	Rory persuades Thomas to start a street race in New York City
+Thomas persuades Rory to bake some food	Rory is persuaded to bake some food	Rory persuades Thomas to bake some food
+Georgia persuades Albert to bake shish kabobs in the oven	Albert is persuaded to bake shish kabobs in the oven	Albert persuades Georgia to bake shish kabobs in the oven
+Georgia persuades Albert to bake in the oven	Albert is persuaded to bake in the oven	Albert persuades Georgia to bake in the oven
+Georgia persuades Albert to balance on a structure	Albert is persuaded to balance on a structure	Albert persuades Georgia to balance on a structure
+Evelyn persuades Nathan to climb the rock formation	Nathan is persuaded to climb the rock formation	Nathan persuades Evelyn to climb the rock formation
+Evelyn persuades Nathan to balance on a spinning wheel	Nathan is persuaded to balance on a spinning wheel	Nathan persuades Evelyn to balance on a spinning wheel
+Evelyn persuades Nathan to adjust the flame of a blowtorch	Nathan is persuaded to adjust the flame of a blowtorch	Nathan persuades Evelyn to adjust the flame of a blowtorch
+Evie commands Callum to adjust the clothing of her child	Callum is commanded to adjust the clothing of her child	Callum commands Evie to adjust the clothing of her child
+Evie commands Callum to bake indoors	Callum is commanded to bake indoors	Callum commands Evie to bake indoors
+Evie commands Callum to just the bride	Callum is commanded to just the bride	Callum commands Evie to just the bride
+Lacey commands Molly to adjust the grill on a bicycle	Molly is commanded to adjust the grill on a bicycle	Molly commands Lacey to adjust the grill on a bicycle
+Lacey commands Molly to boil over a campfire	Molly is commanded to boil over a campfire	Molly commands Lacey to boil over a campfire
+Lacey commands Molly to bake in the kitchen	Molly is commanded to bake in the kitchen	Molly commands Lacey to bake in the kitchen
+Olivia commands Emma to go skydiving	Emma is commanded to go skydiving	Emma commands Olivia to go skydiving
+Olivia commands Emma to leave the room	Emma is commanded to leave the room	Emma commands Olivia to leave the room
+Olivia commands Emma to adjust the camera	Emma is commanded to adjust the camera	Emma commands Olivia to adjust the camera
+Katie commands Faith to approach a parachute to gather it up	Faith is commanded to approach a parachute to gather it up	Faith commands Katie to approach a parachute to gather it up
+Katie commands Faith to accept an award in front of an audiance on stage	Faith is commanded to accept an award in front of an audiance on stage	Faith commands Katie to accept an award in front of an audiance on stage
+Katie commands Faith to leave on a road trip	Faith is commanded to leave on a road trip	Faith commands Katie to leave on a road trip
+Sebastian commands Lydia to bake in the oven	Lydia is commanded to bake in the oven	Lydia commands Sebastian to bake in the oven
+Sebastian commands Lydia to boil an egg	Lydia is commanded to boil an egg	Lydia commands Sebastian to boil an egg
+Sebastian commands Lydia to adjust the camera	Lydia is commanded to adjust the camera	Lydia commands Sebastian to adjust the camera
+Henry commands Lottie to adjust the bike	Lottie is commanded to adjust the bike	Lottie commands Henry to adjust the bike
+Henry commands Lottie to perform a demonstration	Lottie is commanded to perform a demonstration	Lottie commands Henry to perform a demonstration
+Henry commands Lottie to adjust the clothing of her child	Lottie is commanded to adjust the clothing of her child	Lottie commands Henry to adjust the clothing of her child
+Jessica commands Julia to boil an egg	Julia is commanded to boil an egg	Julia commands Jessica to boil an egg
+Jessica commands Julia to boil noodles	Julia is commanded to boil noodles	Julia commands Jessica to boil noodles
+Jessica commands Julia to boil over a stove	Julia is commanded to boil over a stove	Julia commands Jessica to boil over a stove
+Jude commands Jacob to bake chocolate chip cookies	Jacob is commanded to bake chocolate chip cookies	Jacob commands Jude to bake chocolate chip cookies
+Jude commands Jacob to perform a demonstration	Jacob is commanded to perform a demonstration	Jacob commands Jude to perform a demonstration
+Jude commands Jacob to approach a person	Jacob is commanded to approach a person	Jacob commands Jude to approach a person
+Dylan commands Zoe to adjust the flame of a blowtorch	Zoe is commanded to adjust the flame of a blowtorch	Zoe commands Dylan to adjust the flame of a blowtorch
+Dylan commands Zoe to adjust the clothing of her child	Zoe is commanded to adjust the clothing of her child	Zoe commands Dylan to adjust the clothing of her child
+Dylan commands Zoe to approach a parachute to gather it up	Zoe is commanded to approach a parachute to gather it up	Zoe commands Dylan to approach a parachute to gather it up
+Logan commands Willow to begin playing his guitar on stage	Willow is commanded to begin playing his guitar on stage	Willow commands Logan to begin playing his guitar on stage
+Logan commands Willow to attempt a trick on the water skis	Willow is commanded to attempt a trick on the water skis	Willow commands Logan to attempt a trick on the water skis
+Logan commands Willow to start a protest	Willow is commanded to start a protest	Willow commands Logan to start a protest

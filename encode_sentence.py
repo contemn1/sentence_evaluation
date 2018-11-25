@@ -267,12 +267,12 @@ if __name__ == '__main__':
                       "fixed_point_inversion.txt"]
     file_path_list = [os.path.join(data_path, ele) for ele in file_name_list]
     tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
+    model = BertModel.from_pretrained('bert-base-uncased')
+    model.eval()
     first = sentences_unfold(file_path_list[0], delimiter="\t")
     dataset = TextIndexDataset(first, tokenizer, True)
     data_loader = DataLoader(dataset, batch_size=144, num_workers=4,
                              collate_fn=dataset.collate_fn_one2one)
-    model = BertModel.from_pretrained('bert-base-uncased')
-    model.eval()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     result = []
     for ids, masks in data_loader:
@@ -283,4 +283,4 @@ if __name__ == '__main__':
         average_embeddings = torch.mean(encoded_layers, dim=1) #torch.Tensor
         result.append(average_embeddings.detach().cpu())
     result = np.vstack(result)
-    print(result)
+    output_results(result)

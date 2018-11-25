@@ -26,7 +26,8 @@ def negate_quantifier(input_sent: str):
         return input_sent
     else:
         without_verb = CURRENT_PATTERN.sub("", input_sent)
-        change_start = NO_PATTERN.sub("There {0} no".format(res.group()), without_verb)
+        change_start = NO_PATTERN.sub("There {0} no".format(res.group()),
+                                      without_verb)
         return re.sub("\s+", " ", change_start)
 
 
@@ -41,7 +42,8 @@ def negate_verb(input_sent: str):
 def generate_negative_samples():
     file_path = "/Users/zxj/PycharmProjects/sentence_evaluation/dataset/negative_no_unique.txt"
     file_generator = read_file(file_path, preprocess=lambda x: x.split("\t"))
-    file_generator = ([tup[0], tup[1].strip(), negate_verb(tup[0])] for tup in file_generator)
+    file_generator = ([tup[0], tup[1].strip(), negate_verb(tup[0])] for tup in
+                      file_generator)
     for ele in file_generator:
         print("\001".join(ele).strip())
 
@@ -93,8 +95,9 @@ def generate_index(index_set):
 
     return random_once
 
+
 def past_particle(word):
-    if word and  word[-1] == "e":
+    if word and word[-1] == "e":
         return word + "d"
 
     if word == "rob":
@@ -113,7 +116,9 @@ def simple_triple(names_list, verbs_list, times):
             first = names_list[index_generator(0, 199)]
             second = names_list[index_generator(0, 199)]
             active_sent = sent_template.format(first, verb, second)
-            passive_sent = "{0} is {1} by {2}".format(second, past_particle(verb), first)
+            passive_sent = "{0} is {1} by {2}".format(second,
+                                                      past_particle(verb),
+                                                      first)
             active_inversion = sent_template.format(second, verb, first)
             print(active_sent + "\t" + passive_sent + "\t" + active_inversion)
 
@@ -129,14 +134,19 @@ def complicate_triple(names_list, verbs_list, phase_list, times):
             first = names_list[index_generator(0, 199)]
             second = names_list[index_generator(0, 199)]
             for _ in range(3):
-                third = phase_list[index_generator(0, len(phase_list)-1)]
-                active_sent = first + " " + pattern.sub(second, verb) + " " + third
+                third = phase_list[index_generator(0, len(phase_list) - 1)]
+                active_sent = first + " " + pattern.sub(second,
+                                                        verb) + " " + third
                 passive_sent = "{0} is {1} to {2}".format(second,
-                                                      past_particle(verb.split(" ")[0]),
-                                                      third)
+                                                          past_particle(
+                                                              verb.split(" ")[
+                                                                  0]),
+                                                          third)
 
-                active_inversion = second + " " + pattern.sub(first, verb) + " " + third
-                print(active_sent + "\t" + passive_sent + "\t" + active_inversion)
+                active_inversion = second + " " + pattern.sub(first,
+                                                              verb) + " " + third
+                print(
+                    active_sent + "\t" + passive_sent + "\t" + active_inversion)
                 index_set.clear()
 
             index_set.clear()
@@ -212,7 +222,8 @@ def generate_random(file_path, get_reordered):
 
 def load_sick2(sick_path="/Users/zxj/Downloads/SICK/SICK.txt"):
     file_list = read_file(sick_path)
-    file_list = (ele.split("\t")[1:7] for ele in file_list if not ele.startswith("pair_ID"))
+    file_list = (ele.split("\t")[1:7] for ele in file_list if
+                 not ele.startswith("pair_ID"))
     file_list = ([ele[0], ele[1], ele[2], ele[3]] for ele in file_list)
     return file_list
 
@@ -272,7 +283,8 @@ def find_pos_of_certain_word(model, sentence, word):
 
 def devide_dataset():
     sents = load_sick2()
-    sents = (ele for ele in sents if float(ele[3]) > 4.6 and ele[2].lower() == "entailment")
+    sents = (ele for ele in sents if
+             float(ele[3]) > 4.6 and ele[2].lower() == "entailment")
     model = spacy.load('en')
     res1 = []
     res2 = []
@@ -327,7 +339,7 @@ def generate_typos():
                       preprocess=lambda x: x.strip().split("\t"))
     for arr in sents:
         words = arr[0].split(" ")
-        first =[1 if word in typo_dict else 0 for word in words]
+        first = [1 if word in typo_dict else 0 for word in words]
         if np.sum(first) >= num:
             typo_map = random_typo(words, typo_dict, 1)
             for key, value in typo_map.items():
@@ -335,9 +347,11 @@ def generate_typos():
                 arr.append(new_sent)
                 print("\t".join(arr))
 
+
 def factual_test():
-    sents = read_file("/Users/zxj/Google 云端硬盘/experiment-results/Clause Relatedness/clause_relatededness_samples.txt",
-                      preprocess=lambda x: x.strip().split("\002")[:-1])
+    sents = read_file(
+        "/Users/zxj/Google 云端硬盘/experiment-results/Clause Relatedness/clause_relatededness_samples.txt",
+        preprocess=lambda x: x.strip().split("\002")[:-1])
     replace_dict = {"say": "deny",
                     "says": "denies",
                     "said": "denied",
@@ -363,21 +377,24 @@ def first_to_upper(sentence):
 
 def extract_clause(sent, language_model):
     result_list = language_model(sent)
-    verb_in_clause = [ele for ele in result_list if ele.dep_ == "ccomp" and ele.head.dep_ == "ROOT"]
+    verb_in_clause = [ele for ele in result_list if
+                      ele.dep_ == "ccomp" and ele.head.dep_ == "ROOT"]
     if not verb_in_clause:
         return ""
 
     if verb_in_clause[0].idx < verb_in_clause[0].head.idx:
         result = re.search('\"(.+?)\"', sent)
         return first_to_upper(result.group()[1:-1]) if result else ""
-    subj_in_clause = [subj for subj in verb_in_clause[0].children if subj.dep_ == "nsubj"]
+    subj_in_clause = [subj for subj in verb_in_clause[0].children if
+                      subj.dep_ == "nsubj"]
     if not subj_in_clause:
         return ""
 
     if not subj_in_clause[0].children:
         return sent[subj_in_clause[0].idx:]
 
-    sorted_children = sorted(list(subj_in_clause[0].children), key=lambda x: x.idx)
+    sorted_children = sorted(list(subj_in_clause[0].children),
+                             key=lambda x: x.idx)
     if not sorted_children:
         return ""
     start_index = sorted_children[0].idx
@@ -405,7 +422,8 @@ def negate_word_msr(old_sent, language_model):
     new_sent = old_sent
     for token in language_model(old_sent):
         if token.dep_ == "ccomp" and token.head.dep_ == "ROOT":
-            neg_child = [child for child in token.children if child.dep_ == "neg"]
+            neg_child = [child for child in token.children if
+                         child.dep_ == "neg"]
             if neg_child:
                 neg_word = neg_child[0]
                 new_sent = re.sub("{0} ".format(neg_word), " ", old_sent)
@@ -423,19 +441,24 @@ def negate_word_msr(old_sent, language_model):
                                       old_sent)
 
             elif token.tag_ == "VBP":
-                new_sent = re.sub("{0}".format(token.text), "don't {0}".format(token), old_sent)
+                new_sent = re.sub("{0}".format(token.text),
+                                  "don't {0}".format(token), old_sent)
 
             elif token.tag_ == "VBD":
-                new_sent = re.sub("{0}".format(token.text), "didn't {0}".format(token.lemma_), old_sent)
+                new_sent = re.sub("{0}".format(token.text),
+                                  "didn't {0}".format(token.lemma_), old_sent)
 
             else:
-                aux_word = [child for child in token.children if child.dep_ == "aux"]
+                aux_word = [child for child in token.children if
+                            child.dep_ == "aux"]
                 if aux_word and not aux_word[0].text == "will":
                     new_sent = re.sub(" {0} ".format(aux_word[0].text),
-                                      " {0}n't ".format(aux_word[0].text), old_sent)
+                                      " {0}n't ".format(aux_word[0].text),
+                                      old_sent)
                 if aux_word and aux_word[0].text == "will":
                     new_sent = re.sub(" {0} ".format(aux_word[0].text),
-                                      " won't ".format(aux_word[0].text), old_sent)
+                                      " won't ".format(aux_word[0].text),
+                                      old_sent)
             return new_sent
 
 
@@ -475,16 +498,10 @@ def extract_verb_phases(sent, model):
 
 
 if __name__ == '__main__':
-    language_model = spacy.load("en")
-    clause_path = "/Users/zxj/Downloads/sub_clause.txt"
-    name_path = "/Users/zxj/PycharmProjects/sentence_evaluation/person_names.txt"
-    clause_list = list(read_file(clause_path, preprocess=lambda x: x.strip()))
-    name_list = list(read_file(name_path, preprocess=lambda x: x.strip()))
-    for ele in clause_list[:255]:
-        first_char = ele[0].lower()
-        ele = first_char + ele[1:]
-        first, second = random.choices(name_list, k=2)
-        original = "{0} tells {1} that {2}".format(first, second, ele)
-        passive = "{0} is told that {1}".format(second, ele)
-        inverted = "{0} tells {1} that {2}".format(second, first, ele)
-        print("\t".join([original, passive, inverted]))
+    variant_path = "/Users/zxj/Dropbox/corpus/negation_variant.txt"
+    variant_file = read_file(variant_path,
+                             preprocess=lambda x: x.strip().split("\t"))
+    for idx, ele in enumerate(variant_file):
+        if idx <= 230:
+            ele[1], ele[2] = ele[2], ele[1]
+        print("\t".join(ele))
