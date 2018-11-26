@@ -265,11 +265,9 @@ if __name__ == '__main__':
     model_path = config.infer_sent_model_path
     sent2vec_model_path = config.sent2vec_model_path
     data_path = config.data_path
-    file_name_list = ["negation_detection.txt", "negation_variant.txt",
-                      "argument_sensitivity.txt", "clause_relatedness.txt",
+    file_name_list = ["clause_relatedness.txt",
                       "fixed_point_inversion.txt"]
-    accuracy_function = [normal_accuracy, negation_variant_accuracy,
-                         normal_accuracy, normal_accuracy,
+    accuracy_function = [normal_accuracy, normal_accuracy, normal_accuracy,
                          normal_accuracy]
     file_path_list = [os.path.join(data_path, ele) for ele in file_name_list]
     tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
@@ -278,7 +276,7 @@ if __name__ == '__main__':
     for index, path in enumerate(file_path_list):
         first = sentences_unfold(path, delimiter="\t")
         dataset = TextIndexDataset(first, tokenizer, True)
-        data_loader = DataLoader(dataset, batch_size=144, num_workers=4,
+        data_loader = DataLoader(dataset, batch_size=72, num_workers=1,
                                  collate_fn=dataset.collate_fn_one2one)
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         result = []
@@ -292,4 +290,4 @@ if __name__ == '__main__':
         result = np.vstack(result)
         final_result = output_results(result,
                                       calculate_accuracy=accuracy_function[index])
-        print(final_result)
+        print("\t".join(final_result))
