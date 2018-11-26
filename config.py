@@ -14,6 +14,8 @@ def init_argument_parser():
     parser.add_argument("--sent2vec-model-path", type=str, metavar="N",
                         default="/mnt/wiki_unigrams.bin",
                         help="path of sent2vec model")
+    parser.add_argument("--fast-text-path", type=str,
+                        default="/mnt/fastText/crawl-300d-2M.vec.zip")
     parser.add_argument("--data-path", type=str,
                         default="/home/zxj/Downloads/new_corpus",
                         help="path of data file")
