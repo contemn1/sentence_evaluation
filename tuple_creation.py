@@ -1,13 +1,11 @@
 import re
 import spacy
-import random
 import numpy as np
 import operator
 from typing import Iterator
 from typing import List
 
 from encode_sentence import read_file
-from encode_sentence import take_two
 from IOUtil import output_list_to_file
 from nltk.corpus import wordnet as wn
 from BKTree import Tree
@@ -497,11 +495,55 @@ def extract_verb_phases(sent, model):
     return " ".join(verb_phases)
 
 
+def valid_sentence(sentence, parser):
+    doc = parser(sentence)
+    for token in doc:
+        if token.dep_ == "conj" and token.pos_ == "NOUN" and token.head.pos_ == "NOUN":
+            return True
+    return False
+
+
+def valid_structure(docs):
+    for ele in docs:
+        if ele.dep_ == "conj" and ele.head.dep_ in {"dobj", "pobj"}:
+            return True
+    return False
+
+
+def generate_compositional_triplets(sentence, doc):
+    for ele in doc:
+        if ele.dep_ == "conj" and ele.head.dep_ in {"dobj", "pobj"}:
+            end_index = ele.idx + len(ele.text)
+            start_element = [child for child in ele.head.children if child.dep_ == "cc"]
+            if not start_element:
+                continue
+            start_index = start_element[0].idx
+            first_part = sentence[:start_index - 1]
+            second_part = sentence[end_index:]
+            original_sentence = first_part + second_part
+            negation_word = ", not a" if ele.tag_ in sigular_set else ", not"
+            not_part = negation_word + \
+                       sent[start_index + len(start_element[0].text):end_index]
+            if sent[end_index + 1] != "," and sent[end_index + 1] != ".":
+                not_part = not_part + ","
+
+            negation_sentence = first_part + not_part + second_part
+            return original_sentence + "\t" + sentence + "\t" + negation_sentence
+    return ""
+
+
 if __name__ == '__main__':
-    variant_path = "/Users/zxj/Dropbox/corpus/negation_variant.txt"
-    variant_file = read_file(variant_path,
-                             preprocess=lambda x: x.strip().split("\t"))
-    for idx, ele in enumerate(variant_file):
-        if idx <= 230:
-            ele[1], ele[2] = ele[2], ele[1]
-        print("\t".join(ele))
+    nlp = spacy.load('en_core_web_sm')
+    snli_path = "/Users/zxj/Downloads/prototype_sentences.txt"
+    snli_list = read_file(snli_path,
+                          preprocess=lambda x: x.strip())
+    sigular_set = {"NN", "NNP"}
+    result_list = []
+    for sent in snli_list:
+        doc = nlp(sent)
+        triplet = generate_compositional_triplets(sent, doc)
+        if triplet:
+            result_list.append(triplet)
+
+    output_list_to_file("/Users/zxj/Downloads/compositional_triplets.txt",
+                        result_list)

@@ -1,13 +1,9 @@
 # -*- coding: utf-8 -*-
 
-import numpy as np
-import json
 from binary import BinaryClassifierEval
-import torch
 from torch.utils.data import DataLoader
 from customized_dataset import TextDataset
 from word_dict_test import read_file
-from IOUtil import unfold_domain
 import IOUtil
 import random
 import multiprocessing

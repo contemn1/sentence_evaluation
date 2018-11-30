@@ -10,7 +10,6 @@ from IOUtil import get_glove
 from nltk.tokenize import word_tokenize
 from functools import reduce
 import spacy
-from nltk.corpus import wordnet as wn
 from scipy import logical_and
 import sent2vec
 from config import init_argument_parser
