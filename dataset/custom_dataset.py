@@ -1,7 +1,7 @@
 import numpy as np
 from torch.utils.data import Dataset
 import torch
-
+from allennlp.modules.elmo import  batch_to_ids
 
 
 class TextIndexDataset(Dataset):
@@ -10,6 +10,7 @@ class TextIndexDataset(Dataset):
         self.raw_texts = word_sequence
         self.tokenizer = tokenizer
         self.use_cuda = use_cuda
+
     def __len__(self):
         return len(self.raw_texts)
 
@@ -17,18 +18,19 @@ class TextIndexDataset(Dataset):
         tokens = self.tokenizer.tokenize(self.raw_texts[index])
         new_tokens = ["[CLS]"] + tokens
         new_tokens.append("[SEP]")
-        input_ids = self.tokenizer.convert_tokens_to_ids(new_tokens)
-        return input_ids
+        return new_tokens
 
-    def collate_fn_one2one(self, batch_ids):
+    def collate_fn_one2one(self, batch_sents):
         '''
         Puts each data field into a tensor with outer dimension batch size"
         '''
-        sequence_lengths = np.array([len(ele) for ele in batch_ids])
-        padded_batch_ids = pad(batch_ids, sequence_lengths,
+        bert_ids = [self.tokenizer.convert_tokens_to_ids(tokens) for tokens in batch_sents]
+        elmo_ids = batch_to_ids(batch_sents)
+        sequence_lengths = np.array([len(ele) for ele in bert_ids])
+        padded_batch_ids = pad(bert_ids, sequence_lengths,
                                0)  # type: torch.Tensor
         input_masks = padded_batch_ids > 0
-        return padded_batch_ids, input_masks
+        return padded_batch_ids, input_masks, elmo_ids
 
 
 def pad(sequence_raw, sequence_length, pad_id):

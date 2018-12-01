@@ -18,6 +18,7 @@ from dataset.custom_dataset import TextIndexDataset
 from pytorch_pretrained_bert import BertTokenizer
 from torch.utils.data import DataLoader
 from pytorch_pretrained_bert import BertModel
+from allennlp.modules.elmo import Elmo, batch_to_ids
 
 
 def load_sentences(file_path):
@@ -262,11 +263,11 @@ def get_embedding_from_bert(model, tokenizer):
         dataset = TextIndexDataset(sentences, tokenizer, True)
         data_loader = DataLoader(dataset, batch_size=72, num_workers=0,
                                  collate_fn=dataset.collate_fn_one2one)
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         result = []
-        for ids, masks in data_loader:
-            ids.to(device)
-            masks.to(device)
+        for ids, masks, _ in data_loader:
+            if torch.cuda.is_available():
+                ids = ids.cuda()
+                masks = masks.cuda()
             encoded_layers, _ = model(ids, attention_mask=masks,
                                       output_all_encoded_layers=False)
             average_embeddings = torch.mean(encoded_layers,
@@ -276,6 +277,40 @@ def get_embedding_from_bert(model, tokenizer):
         return result
 
     return bert_embeddings
+
+
+def elmo_embeddings(sentences, model):
+    model.eval()
+    batch_size = 48
+    average_pooling_tensor = None
+    max_pooling_tensor = None
+    for idx in range(0, len(sentences), batch_size):
+        id_batch = batch_to_ids(sentences[idx: idx + batch_size])
+        if torch.cuda.is_available():
+            model = model.cuda()
+            id_batch = id_batch.cuda()
+        with torch.no_grad():
+            embeddings = model(id_batch)
+            elmo_representations = embeddings["elmo_representations"][0]  # type: torch.Tensor
+            masks = (embeddings["mask"]).float()  # type: torch.Tensor
+            average_embeddings = get_average_pooling(elmo_representations, masks)
+            max_pooling_embeddings = get_max_pooling(elmo_representations)
+            average_pooling_tensor = average_embeddings if average_pooling_tensor is None else torch.cat(
+                [average_pooling_tensor, average_embeddings], dim=0)
+            max_pooling_tensor = max_pooling_embeddings if max_pooling_tensor is None else torch.cat(
+                [max_pooling_tensor, max_pooling_embeddings], dim=0)
+    return average_pooling_tensor.detach().cpu().numpy(), max_pooling_tensor.detach().cpu().numpy()
+
+
+def get_average_pooling(embeddings, masks):
+    sum_embeddings = torch.bmm(masks.unsqueeze(1), embeddings).squeeze(1)
+    average_embeddings = sum_embeddings / masks.sum(dim=1, keepdim=True)
+    return average_embeddings
+
+
+def get_max_pooling(embeddings):
+    max_pooling_embeddings, _ = torch.max(embeddings, 1)
+    return max_pooling_embeddings
 
 
 if __name__ == '__main__':
@@ -291,13 +326,69 @@ if __name__ == '__main__':
     accuracy_function = [normal_accuracy, negation_variant_accuracy,
                          normal_accuracy, normal_accuracy, normal_accuracy]
     file_path_list = [os.path.join(data_path, ele) for ele in file_name_list]
-    model = resume_model(model_path, config.fast_text_path,
-                         2, torch.cuda.is_available())
-    for index, path in enumerate(file_path_list):
-        sentence_list = sentences_unfold(path, delimiter="\t")
-        model.build_vocab(sentence_list)
-        result = model.encode(sentence_list, 64, True)
-        final_result = output_results(result,
-                                      calculate_accuracy=accuracy_function[
-                                          index])
-        print("\t & ".join(final_result))
+    options_file = "https://s3-us-west-2.amazonaws.com/allennlp/models/elmo/2x4096_512_2048cnn_2xhighway/elmo_2x4096_512_2048cnn_2xhighway_options.json"
+    weight_file = "https://s3-us-west-2.amazonaws.com/allennlp/models/elmo/2x4096_512_2048cnn_2xhighway/elmo_2x4096_512_2048cnn_2xhighway_weights.hdf5"
+    elmo_model = Elmo(options_file, weight_file, 1)
+    bert_model = BertModel.from_pretrained('bert-base-uncased')
+    elmo_model.eval()
+    bert_model.eval()
+    tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+
+    for idx, path in enumerate(file_path_list):
+        average_pooling_tensor = None
+        max_pooling_tensor = None
+        average_bert_tensor = None
+        max_bert_tensor = None
+        sentences = sentences_unfold(path, delimiter="\t")
+        dataset = TextIndexDataset(sentences, tokenizer, True)
+        data_loader = DataLoader(dataset, batch_size=48, num_workers=0,
+                                 collate_fn=dataset.collate_fn_one2one)
+        for ids, masks, elmo_ids in data_loader:
+            masks = masks.float()
+            if torch.cuda.is_available():
+                ids = ids.cuda()
+                masks = masks.cuda()
+                elmo_ids = elmo_ids.cuda()
+                bert_model = bert_model.cuda()
+                elmo_model = elmo_model.cuda()
+            with torch.no_grad():
+                encoded_bert_layers, _ = bert_model(ids, attention_mask=masks,
+                                                    output_all_encoded_layers=False)
+                elmo_dict = elmo_model(elmo_ids)
+                elmo_representations = elmo_dict["elmo_representations"][0]  # type: torch.Tensor
+                elmo_mask = elmo_dict["mask"]
+                elmo_mask = elmo_mask.float()
+                concatenated_layers = torch.cat((encoded_bert_layers, elmo_representations), dim=2)
+
+                average_elmo = get_average_pooling(elmo_representations, elmo_mask)
+                max_elmo = get_max_pooling(elmo_representations)
+
+                average_embeddings = get_average_pooling(concatenated_layers, masks)
+                max_pooling_embeddings = get_max_pooling(concatenated_layers)
+                average_pooling_tensor = average_embeddings if average_pooling_tensor is None else torch.cat(
+                    [average_pooling_tensor, average_embeddings], dim=0)
+                max_pooling_tensor = max_pooling_embeddings if max_pooling_tensor is None else torch.cat(
+                    [max_pooling_tensor, max_pooling_embeddings], dim=0)
+                average_bert_tensor = average_elmo if average_bert_tensor is None else torch.cat(
+                    [average_bert_tensor, average_elmo], dim=0)
+                max_bert_tensor = max_elmo if max_bert_tensor is None else torch.cat(
+                    [max_bert_tensor, max_elmo], dim=0)
+
+        average_pooling_result = output_results(average_pooling_tensor.cpu().numpy(),
+                                                calculate_accuracy=accuracy_function[idx])
+        max_pooling_result = output_results(max_pooling_tensor.cpu().numpy(),
+                                            calculate_accuracy=accuracy_function[idx])
+        average_bert_result = output_results(average_bert_tensor.cpu().numpy(),
+                                             calculate_accuracy=accuracy_function[idx])
+        max_bert_result = output_results(max_bert_tensor.cpu().numpy(),
+                                         calculate_accuracy=accuracy_function[idx])
+
+        print("Result of average pooling bert on {0} dataset is: --------".format(file_name_list[idx]))
+        print("\t& ".join(average_bert_result) + """\\""")
+        print("Result of max pooling bert on {0} dataset is: --------".format(file_name_list[idx]))
+        print("\t& ".join(max_bert_result) + """\\""")
+
+        print("Result of average pooling  concatenation on {0} dataset is: --------".format(file_name_list[idx]))
+        print("\t& ".join(average_pooling_result) + """\\""")
+        print("Result of max pooling concatenation on {0} dataset is: --------".format(file_name_list[idx]))
+        print("\t& ".join(max_pooling_result) + """\\""")
