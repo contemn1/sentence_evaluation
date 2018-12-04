@@ -3,18 +3,19 @@ from torch.utils.data import Dataset
 import torch
 
 
-
 class TextIndexDataset(Dataset):
     def __init__(self, word_sequence, tokenizer,
-                 use_cuda=False):
+                 use_cuda=False, max_length=64):
         self.raw_texts = word_sequence
         self.tokenizer = tokenizer
         self.use_cuda = use_cuda
+        self.max_length = max_length
+
     def __len__(self):
         return len(self.raw_texts)
 
     def __getitem__(self, index):
-        tokens = self.tokenizer.tokenize(self.raw_texts[index])
+        tokens = self.tokenizer.tokenize(self.raw_texts[index])[:self.max_length]
         new_tokens = ["[CLS]"] + tokens
         new_tokens.append("[SEP]")
         input_ids = self.tokenizer.convert_tokens_to_ids(new_tokens)

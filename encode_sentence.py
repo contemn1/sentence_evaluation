@@ -260,19 +260,22 @@ def get_embedding_from_bert(model, tokenizer):
 
     def bert_embeddings(sentences):
         dataset = TextIndexDataset(sentences, tokenizer, True)
-        data_loader = DataLoader(dataset, batch_size=72, num_workers=0,
+        data_loader = DataLoader(dataset, batch_size=64, num_workers=0,
                                  collate_fn=dataset.collate_fn_one2one)
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        result = []
+
+        result = None
         for ids, masks in data_loader:
-            ids.to(device)
-            masks.to(device)
-            encoded_layers, _ = model(ids, attention_mask=masks,
+            if torch.cuda.is_available():
+                ids = ids.cuda()
+                masks = masks.cuda()
+
+            _, pooled_output = model(ids, attention_mask=masks,
                                       output_all_encoded_layers=False)
-            average_embeddings = torch.mean(encoded_layers,
-                                            dim=1)  # torch.Tensor
-            result.append(average_embeddings.detach().cpu())
-        result = np.vstack(result)
+            if result is None:
+                result = pooled_output.cpu().numpy()
+            else:
+                result = np.vstack((result, pooled_output.cpu().numpy()))
+
         return result
 
     return bert_embeddings
@@ -300,4 +303,3 @@ if __name__ == '__main__':
         final_result = output_results(result,
                                       calculate_accuracy=accuracy_function[
                                           index])
-        print("\t & ".join(final_result))
