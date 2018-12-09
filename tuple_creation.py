@@ -1,17 +1,16 @@
+import os
+import random
 import re
-import spacy
-import numpy as np
-import operator
 from typing import Iterator
 from typing import List
 
-from encode_sentence import read_file
-from IOUtil import output_list_to_file
-from nltk.corpus import wordnet as wn
-from BKTree import Tree
-import random
+import numpy as np
 import spacy
-import json
+from nltk.corpus import wordnet
+from nltk.corpus import wordnet as wn
+
+from IOUtil import output_list_to_file
+from encode_sentence import read_file
 
 NO_PATTERN = re.compile("No")
 CURRENT_PATTERN = re.compile("is|are|am")
@@ -511,6 +510,7 @@ def valid_structure(docs):
 
 
 def generate_compositional_triplets(sentence, doc):
+    sigular_set = {"NN", "NNP"}
     for ele in doc:
         if ele.dep_ == "conj" and ele.head.dep_ in {"dobj", "pobj"}:
             end_index = ele.idx + len(ele.text)
@@ -523,8 +523,8 @@ def generate_compositional_triplets(sentence, doc):
             original_sentence = first_part + second_part
             negation_word = ", not a" if ele.tag_ in sigular_set else ", not"
             not_part = negation_word + \
-                       sent[start_index + len(start_element[0].text):end_index]
-            if sent[end_index + 1] != "," and sent[end_index + 1] != ".":
+                       sentence[start_index + len(start_element[0].text):end_index]
+            if sentence[end_index + 1] != "," and sentence[end_index + 1] != ".":
                 not_part = not_part + ","
 
             negation_sentence = first_part + not_part + second_part
@@ -532,18 +532,148 @@ def generate_compositional_triplets(sentence, doc):
     return ""
 
 
+def extact_sentences_with_adj_noun(sent, nlp):
+    for ele in nlp(sent):
+        if ele.pos_ == "ADJ" and ele.dep_ == "amod" and ele.head.pos_ == "NOUN":
+            antonyms = get_antonyms(ele.text)
+            real_antonyms = list(set((lemma.name() for lemma in antonyms if lemma.synset().pos() == 'a')))
+            if real_antonyms:
+                yield ((sent, ele.text, ele.head.text, "|".join(real_antonyms)))
+
+
+def has_verb(nlp, sent):
+    verb_list = [ele for ele in nlp(sent) if ele.dep_ == "nsubj"]
+    return len(verb_list) > 0
+
+
+def get_antonyms(word):
+    antonym_list = [anto for syn in wordnet.synsets(word) for lemma in syn.lemmas() for anto in lemma.antonyms()]
+    return antonym_list
+
+
+def filter_noun_adj(snli_path, output_path):
+    snli_list = read_file(snli_path,
+                          preprocess=lambda x: x.strip().split("\t"))
+    snli_list = filter(
+        lambda x: not x[1].strip() in {"little", "small"} or not x[2].strip() in {"boy", "girl", "child", "children",
+                                                                                  "baby"},
+        snli_list)
+    new_snli_list = filter(lambda x: not x[1] in {"green", "other", "musical"}, snli_list)
+    new_quad_list = []
+    antonym_dict = {"same": "different", "different": "same", "long": "short", "short": "long",
+                    "older": "young", "younger": "old"}
+    for quad in snli_list:
+        if quad[1] == "same":
+            quad[3] = "different"
+        if quad[1] == "long":
+            quad[3] = "short"
+        if quad[1] == "short":
+            quad[3] = "long"
+
+        new_quad_list.append(quad)
+
+    output_list_to_file(new_quad_list, output_path, process=lambda x: "\t".join(x))
+
+
+def a_to_an(token_list):
+    new_antonym_sent = []
+    char_set = {"a", "e", "i", "o", "u"}
+    for idx, word in enumerate(token_list):
+        if idx == len(token_list) - 1 or not token_list[idx + 1]:
+            new_antonym_sent.append(word)
+            continue
+        if word not in {"a", "A"} or token_list[idx + 1][0] not in char_set:
+            new_antonym_sent.append(word)
+            continue
+        if word == "a" and token_list[idx + 1][0] in char_set:
+            new_antonym_sent.append("an")
+        if word == "A" and token_list[idx + 1][0] in char_set:
+            new_antonym_sent.append("An")
+
+    return " ".join(new_antonym_sent)
+
+
+def generate_compositional_not_dataset(snli_list):
+    snli_list = filter(lambda x: len(x[3].split("|")) == 1, snli_list)
+    replace_dict = {"boy": "man", "girl": "woman", "boys": "men", "girls": "women"}
+    person_set = {"man", "woman", "men", "women", "boy", "boys", "girl", "girls", "kid", "kids", "lady", "ladies",
+                  "gentleman", "gentlemen", "male", "female"}
+    result_list = []
+    for quad in snli_list:
+        sent = quad[0]
+        if quad[1].strip().lower() in {"green", "musical"}:
+            continue
+
+        token_list = nlp(sent)
+        for token in token_list:
+            head_noun = token.head
+            if token.text == quad[1] and head_noun.text == quad[2]:
+                replace_template = "{0} who {1} {2}" if quad[2] in person_set else "{0} which {1} {2}"
+                if quad[1] == "young" and quad[2] in replace_dict:
+                    first = sent[:token.idx]
+                    replace_word = quad[3] + " " + replace_dict[quad[2]]
+                    end_index = head_noun.idx + len(head_noun.text)
+
+                else:
+                    first = sent[:token.idx]
+                    replace_word = quad[3] + " "
+                    end_index = head_noun.idx
+
+                second = quad[0][end_index:]
+                antonym_sent = first + replace_word + second
+                new_antonym_sent = a_to_an(antonym_sent.split(" "))
+
+                linking_verb = "is" if head_noun.tag_ in {"NN", "NNS"} else "are"
+                syn_second_index = head_noun.idx + len(head_noun.text)
+                synonym_sent = first + replace_template.format(quad[2], linking_verb, quad[1]) + quad[0][
+                                                                                                 syn_second_index:]
+                result_list.append([sent, synonym_sent, new_antonym_sent])
+
+
+def is_sentence_with_clause(sentence, parser):
+    for ele in parser(sentence):
+        if ele.dep_ == "ccomp" and ele.head.text in {"say", "said", "says", "think", "state", "states", "stated",
+                                                     "thought", "thinks",
+                                                     "believe",
+                                                     "believes", "believed", "claim",
+                                                     "claims",
+                                                     "claimed"} and ele.head.dep_ == "ROOT":
+            return True
+
+    return False
+
+
+def generate_negation_sentence(msrp_iter):
+    replace_dict = {"say": "deny", "says": "denies", "said": "denied", "think": "doubt", "thinks": "doubts",
+                    "thought": "doubted", "believe": "suspect", "believes": "suspects", "believed": "suspected",
+                    "claim": "disclaim", "claims": "disclaims", "claimed": "disclaimed"}
+    for first, second in msrp_iter:
+        for ele in nlp(first):
+            opinion_verb = ele.head
+            if ele.dep_ == "ccomp" and opinion_verb.text in replace_dict:
+                replace_word = replace_dict[opinion_verb.text]
+                end_index = ele.head.idx + len(opinion_verb.text)
+                negation_sent = first[:opinion_verb.idx] + replace_word + first[end_index:]
+                yield (first + "\t" + second + "\t" + negation_sent)
+
+
+def filter_mrpc(file_path):
+    msrp_iter = read_file(file_path, preprocess=lambda x: x.strip().split("\t"))
+    msrp_iter = filter(lambda x: len(x) == 5 and x[0] == "1", msrp_iter)
+    msrp_iter = map(lambda x: (x[3], x[4]), msrp_iter)
+    for first, second in msrp_iter:
+        if is_sentence_with_clause(first, nlp):
+            yield (first + "\t" + second)
+        elif is_sentence_with_clause(second, nlp):
+            yield (second + "\t" + first)
+
+
 if __name__ == '__main__':
     nlp = spacy.load('en_core_web_sm')
-    snli_path = "/Users/zxj/Downloads/prototype_sentences.txt"
-    snli_list = read_file(snli_path,
-                          preprocess=lambda x: x.strip())
-    sigular_set = {"NN", "NNP"}
-    result_list = []
-    for sent in snli_list:
-        doc = nlp(sent)
-        triplet = generate_compositional_triplets(sent, doc)
-        if triplet:
-            result_list.append(triplet)
-
-    output_list_to_file("/Users/zxj/Downloads/compositional_triplets.txt",
-                        result_list)
+    msrp_dir = "/home/zxj/Data/snli_1.0/sentence_pairs_sub_caluse"
+    file_path = os.path.join(msrp_dir, "qualified_pairs_mrpc.txt")
+    msrp_iter = read_file(file_path, preprocess=lambda x: x.strip().split("\t"))
+    result = generate_negation_sentence(msrp_iter)
+    output_list_to_file(os.path.join(msrp_dir, "qualified_triplets_mrpc.txt"),
+                        result,
+                        process=lambda x: x)

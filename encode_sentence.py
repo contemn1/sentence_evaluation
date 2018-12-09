@@ -206,7 +206,7 @@ def negation_variant_accuracy(results):
 
 def output_results(embeddings, verbose=False,
                    calculate_accuracy=normal_accuracy,
-                   output_path="average_scores"):
+                   output_path="average_scores_new.txt"):
     results = calculate_pairwise_similarity(embeddings)
     score_array = np.mean(axis=0, a=results)
     if verbose:
@@ -221,21 +221,21 @@ def output_results(embeddings, verbose=False,
     return result_arr
 
 
-def get_results(file_paths):
+def get_results(file_paths, config):
     for path in file_paths:
         triples = sentences_unfold(path, delimiter="\t")
         glove_result = output_results(
-            get_embedding_from_glove(glove_path, power=1)(triples),
+            get_embedding_from_glove(config.glove_path, power=1)(triples),
             calculate_accuracy=normal_accuracy)
         print("Glove Avg \t &　{0} \t \\\\ ".format("\t &".join(glove_result)))
 
         p_means_result = output_results(
-            get_embedding_from_glove(glove_path, power=3)(triples),
+            get_embedding_from_glove(config.glove_path, power=3)(triples),
             calculate_accuracy=normal_accuracy)
         print("P Means \t &　{0} \t \\\\ ".format("\t & ".join(p_means_result)))
 
         sent2vec_result = output_results(
-            get_embedding_from_sent2vec(sent2vec_model_path)(triples),
+            get_embedding_from_sent2vec(config.sent2vec_model_path)(triples),
             calculate_accuracy=normal_accuracy,
             verbose=False,
             output_path="set2vec_clause_relatedness")
@@ -243,7 +243,7 @@ def get_results(file_paths):
             "Sent2Vec \t &　{0} \t \\\\ ".format("\t & ".join(sent2vec_result)))
 
         infer_sent_result = output_results(
-            get_embedding_from_infersent(model_path)(triples),
+            get_embedding_from_infersent(config.model_path)(triples),
             calculate_accuracy=normal_accuracy,
             verbose=True,
             output_path="infersent_clause_relatedness")
@@ -264,18 +264,21 @@ def get_embedding_from_bert(model, tokenizer):
         data_loader = DataLoader(dataset, batch_size=64, num_workers=0,
                                  collate_fn=dataset.collate_fn_one2one)
         result = None
+        bert = model
         for ids, masks in data_loader:
             if torch.cuda.is_available():
                 ids = ids.cuda()
                 masks = masks.cuda()
+                bert = model.cuda()
 
-            _, pooled_output = model(ids, attention_mask=masks,
-                                     output_all_encoded_layers=False)
+            with torch.no_grad():
+                _, pooled_output = bert(ids, attention_mask=masks,
+                                         output_all_encoded_layers=False)
 
-            if result is None:
-                result = pooled_output.cpu().numpy()
-            else:
-                result = np.vstack((result, pooled_output.cpu().numpy()))
+                if result is None:
+                    result = pooled_output.cpu().numpy()
+                else:
+                    result = np.vstack((result, pooled_output.cpu().numpy()))
 
         return result
 
@@ -316,13 +319,7 @@ def get_max_pooling(embeddings):
     return max_pooling_embeddings
 
 
-if __name__ == '__main__':
-    parser = init_argument_parser()
-    config = parser.parse_args()
-    glove_path = config.glove_path
-    model_path = config.infer_sent_model_path
-    sent2vec_model_path = config.sent2vec_model_path
-    data_path = config.data_path
+def concatenation_encode(data_path):
     file_name_list = ["negation_detection.txt", "negation_variant.txt",
                       "clause_relatedness.txt", "argument_sensitivity.txt",
                       "fixed_point_inversion.txt"]
@@ -395,3 +392,20 @@ if __name__ == '__main__':
         print("\t& ".join(average_pooling_result) + """\\""")
         print("Result of max pooling concatenation on {0} dataset is: --------".format(file_name_list[idx]))
         print("\t& ".join(max_pooling_result) + """\\""")
+
+
+if __name__ == '__main__':
+    bert_model = BertModel.from_pretrained('bert-base-uncased')
+    tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+    bert_encoder = get_embedding_from_bert(bert_model, tokenizer)
+    file_name_list = ['reviews2id_Kindle_Store.json']
+    output_list = ['Kindle_Store_embeddings.json']
+
+    root_dir = "/home/zxj/Data/conver_search/id_reviews"
+    file_path = [os.path.join(root_dir, ele) for ele in file_name_list]
+    output_path = [os.path.join(root_dir, ele) for ele in output_list]
+    for path, out_path in zip(file_path, output_path):
+        sentences = read_file(path, preprocess=lambda x: x.strip().split("\t")[0])
+        sentences = list(sentences)
+        result = bert_encoder(sentences)
+        np.save(out_path, result)
