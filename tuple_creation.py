@@ -399,7 +399,7 @@ def extract_clause(sent, language_model):
     return first_to_upper(result)
 
 
-def extrac_caluse_from_msr(language_model):
+def extrac_caluse_from(language_model):
     path = "/Users/zxj/Downloads/dataset-sts/data/para/msr/msr-para-train.tsv"
     file = read_file(path, preprocess=lambda x: x.split("\t"))
     file = [(ele[3], ele[4].strip()) for ele in file if ele[0] == "1"]
@@ -623,7 +623,7 @@ def generate_compositional_not_dataset(snli_list):
                 antonym_sent = first + replace_word + second
                 new_antonym_sent = a_to_an(antonym_sent.split(" "))
 
-                linking_verb = "is" if head_noun.tag_ in {"NN", "NNS"} else "are"
+                linking_verb = "is" if head_noun.tag_ in {"NN", "NNP"} else "are"
                 syn_second_index = head_noun.idx + len(head_noun.text)
                 synonym_sent = first + replace_template.format(quad[2], linking_verb, quad[1]) + quad[0][
                                                                                                  syn_second_index:]
@@ -668,12 +668,56 @@ def filter_mrpc(file_path):
             yield (second + "\t" + first)
 
 
+def sentecnes_without_opinion_negation(sentence, parser):
+    """
+
+    :type sentence: str
+    :type parser: spacy.lang.en.English
+    :return:
+    """
+    for ele in parser(sentence):
+        if ele.dep_ == "ccomp" and ele.head.text in {"say", "said", "says", "think", "state", "states", "stated",
+                                                     "thought", "thinks",
+                                                     "believe",
+                                                     "believes", "believed", "claim",
+                                                     "claims",
+                                                     "claimed"} and ele.head.dep_ == "ROOT" and ele.head.idx > ele.idx:
+            return True
+
+    return False
+
+
+def sentences_with_word_not_adj(sentence, parser):
+    """
+
+    :type sentence: str
+    :type parser: spacy.lang.en.English
+    :return:
+    """
+    for ele in parser(sentence):
+        if ele.pos_ == "ADJ" and ele.dep_ == "amod" and ele.head.pos_ == "NOUN" and ele.idx > ele.head.idx:
+            return False
+
+    return True
+
+
+def fix_bugs_in_sentence(sent, parser):
+    for token in parser(sent):
+        if token.dep_ == "relcl" and token.text == "is":
+            if token.head.tag_ in {"NNS", "NNPS"}:
+                return sent[:token.idx] + "are" + sent[token.idx + len(token.text):]
+    return sent
+
+
 if __name__ == '__main__':
     nlp = spacy.load('en_core_web_sm')
-    msrp_dir = "/home/zxj/Data/snli_1.0/sentence_pairs_sub_caluse"
-    file_path = os.path.join(msrp_dir, "qualified_pairs_mrpc.txt")
+    msrp_dir = "/home/zxj/Downloads/new_corpus"
+    file_path = os.path.join(msrp_dir, "filtered_opinion_negation_triplets.txt")
+    negation_pattern = re.compile(r" 't")
     msrp_iter = read_file(file_path, preprocess=lambda x: x.strip().split("\t"))
-    result = generate_negation_sentence(msrp_iter)
-    output_list_to_file(os.path.join(msrp_dir, "qualified_triplets_mrpc.txt"),
-                        result,
-                        process=lambda x: x)
+    for ele in msrp_iter:
+        first = ele[0]
+        if negation_pattern.search(first):
+            continue
+        second = negate_word_msr(first, nlp)
+        print(first + "\t" + ele[1] + "\t" + second)

@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 
-import sys
-import logging
-import json
-import numpy as np
 import configparser
+import logging
 import re
-from nltk.tokenize import sent_tokenize
+
+import numpy as np
 from gensim.models import KeyedVectors
+from nltk.tokenize import sent_tokenize
 
 THINKREGEX = re.compile(" says? | said | knows? | knew | thinks? | thought")
 
@@ -37,8 +36,8 @@ def get_glove(glove_path, word_dict):
             if word in word_dict:
                 word_vec[word] = np.fromstring(vec.strip(), sep=' ')
 
-    print('Found {0}(/{1}) words with glove vectors'.format(
-                    len(word_vec), len(word_dict)))
+    logging.info('Found {0}(/{1}) words with glove vectors'.format(
+        len(word_vec), len(word_dict)))
 
     return word_vec
 
@@ -120,6 +119,7 @@ def read_text_file_with_think(input_path):
     except IOError as err:
         print("Failed to read file {0}".format(err))
         return sentecnes
+
 
 if __name__ == '__main__':
     read_text_file_with_think("/Users/zxj/Downloads/treebank_3/raw/wsj/02/wsj_3x.txt")

@@ -8,7 +8,7 @@ def init_argument_parser():
                         help="path of glove file")
 
     parser.add_argument("--infer-sent-model-path", type=str, metavar="N",
-                        default="/home/zxj/Data/models/infersent2.pkl",
+                        default="/home/zxj/Data/models/infersent{0}.pkl",
                         help="path of InferSent models")
 
     parser.add_argument("--sent2vec-model-path", type=str, metavar="N",
