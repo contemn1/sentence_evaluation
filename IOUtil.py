@@ -3,6 +3,7 @@
 import configparser
 import logging
 import re
+import sys
 
 import numpy as np
 from gensim.models import KeyedVectors
@@ -121,5 +122,23 @@ def read_text_file_with_think(input_path):
         return sentecnes
 
 
+def read_file(file_path, encoding="utf-8", preprocess=lambda x: x):
+    try:
+        with open(file_path, encoding=encoding) as file:
+            for sentence in file.readlines():
+                yield (preprocess(sentence))
+
+    except IOError as err:
+        logging.error("Failed to open file {0}".format(err))
+        sys.exit(1)
+
+
 if __name__ == '__main__':
-    read_text_file_with_think("/Users/zxj/Downloads/treebank_3/raw/wsj/02/wsj_3x.txt")
+    path = "/home/zxj/Downloads/new_corpus/argument_compositionality.txt"
+    argument = read_file(path, preprocess=lambda x: x.strip().split("\t"))
+    result_list = []
+    for ele in argument:
+        if len(ele) == 3:
+            result_list.append([ele[1], ele[0], ele[-1]])
+
+    output_list_to_file("/home/zxj/Downloads/new_corpus/new_argument_compositionality.txt", result_list, process=lambda x: "\t".join(x))

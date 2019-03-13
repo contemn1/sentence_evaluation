@@ -17,7 +17,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 from torch.utils.data import DataLoader
 
 from IOUtil import get_glove
-from IOUtil import get_word_dict
+from IOUtil import get_word_dict, read_file
 from config import init_argument_parser
 from dataset.custom_dataset import TextIndexDataset
 from models import InferSent
@@ -28,17 +28,6 @@ def load_sentences(file_path):
         with open(file_path, encoding="utf8") as file:
             sentence_dict = [json.loads(line) for line in file]
             return sentence_dict
-    except IOError as err:
-        logging.error("Failed to open file {0}".format(err))
-        sys.exit(1)
-
-
-def read_file(file_path, encoding="utf-8", preprocess=lambda x: x):
-    try:
-        with open(file_path, encoding=encoding) as file:
-            for sentence in file.readlines():
-                yield (preprocess(sentence))
-
     except IOError as err:
         logging.error("Failed to open file {0}".format(err))
         sys.exit(1)
@@ -274,7 +263,6 @@ def get_embedding_from_bert(model, tokenizer):
                 encoded_layers, pooled_output = bert(ids, attention_mask=masks,
                                                      output_all_encoded_layers=False)
                 max_pooling_batch, _ = torch.max(encoded_layers, dim=1)
-
                 average_pooling_batch = get_average_pooling(encoded_layers, masks)
 
                 if pool_result is None:
@@ -283,12 +271,12 @@ def get_embedding_from_bert(model, tokenizer):
                     pool_result = np.vstack((pool_result, pooled_output.cpu().numpy()))
 
                 if max_pooling_result is None:
-                    max_pooling_result = max_pooling_batch
+                    max_pooling_result = max_pooling_batch.cpu().numpy()
                 else:
                     max_pooling_result = np.vstack((max_pooling_result, max_pooling_batch.cpu().numpy()))
 
                 if average_pooling_result is None:
-                    average_pooling_result = average_pooling_batch
+                    average_pooling_result = average_pooling_batch.cpu().numpy()
                 else:
                     average_pooling_result = np.vstack((average_pooling_result, average_pooling_batch.cpu().numpy()))
 
@@ -407,22 +395,28 @@ def concatenation_encode(data_path):
 if __name__ == '__main__':
     config = init_argument_parser().parse_args()
     nlp = spacy.load('en_core_web_sm')
-    file_name_list = ["clause_relatedness"]
-    accuracy_calculation_methods = [normal_accuracy, negation_variant_accuracy, normal_accuracy, normal_accuracy]
+    file_name_list = ["adjective_compositionality", "factual_relatedness"]
+    accuracy_calculation_methods = [normal_accuracy, normal_accuracy, normal_accuracy,
+                                    normal_accuracy, normal_accuracy, negation_variant_accuracy]
     infer_sent_dict_path = [config.glove_path, config.fast_text_path]
 
     bert_base_tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
     bert_large_tokenzier = BertTokenizer.from_pretrained("bert-large-uncased")
-    bert_base_model = BertModel.from_pretrained('bert-base-uncased')
+
+   # bert_base_snli = BertModel.from_pretrained('bert-base-uncased', state_dict=model_state_dict)
+
+    bert_base_model = BertModel.from_pretrained("bert-base-uncased")
     bert_large_model = BertModel.from_pretrained("bert-large-uncased")
     bert_base_model.eval()
     bert_large_model.eval()
+
 
     options_file = "https://s3-us-west-2.amazonaws.com/allennlp/models/elmo/2x4096_512_2048cnn_2xhighway/elmo_2x4096_512_2048cnn_2xhighway_options.json"
     weight_file = "https://s3-us-west-2.amazonaws.com/allennlp/models/elmo/2x4096_512_2048cnn_2xhighway/elmo_2x4096_512_2048cnn_2xhighway_weights.hdf5"
 
     elmo_model = Elmo(options_file, weight_file, 1, dropout=0)
     glove_encoder = get_embedding_from_glove(config.glove_path)
+
 
     for idx, name in enumerate(file_name_list):
         file_path = os.path.join(config.data_path, "{0}.txt".format(name))
@@ -434,9 +428,11 @@ if __name__ == '__main__':
                        "bert_large_cls": 0, "bert_large_average": 0, "bert_large_max": 0,
                        "elmo_average": 0, "elmo_max": 0}
 
-        accuracy_calculation_func = normal_accuracy
+        accuracy_calculation_func = accuracy_calculation_methods[idx]
+
 
         result_dict["glove"] = output_results(glove_encoder(triplets), accuracy_calculation_func)
+        
 
         for version in range(1, 3):
             model_path = config.infer_sent_model_path.format(version)
@@ -444,13 +440,18 @@ if __name__ == '__main__':
                                                               use_cuda=True)
             dict_key = "infersentV{0}".format(version)
             result_dict[dict_key] = output_results(infer_sent_encoder(triplets), accuracy_calculation_func)
+        
+
 
         base_encoder = get_embedding_from_bert(bert_base_model, bert_base_tokenizer)
+
+
         cls_pooling_base, average_pooling_base, max_pooling_base = base_encoder(triplets)
 
         result_dict["bert_base_cls"] = output_results(cls_pooling_base, accuracy_calculation_func)
         result_dict["bert_base_average"] = output_results(average_pooling_base, accuracy_calculation_func)
         result_dict["bert_base_max"] = output_results(max_pooling_base, accuracy_calculation_func)
+
 
         large_encoder = get_embedding_from_bert(bert_large_model, bert_large_tokenzier)
         cls_pooling_large, average_pooling_large, max_pooling_large = large_encoder(triplets)
@@ -458,9 +459,12 @@ if __name__ == '__main__':
         result_dict["bert_large_average"] = output_results(average_pooling_large, accuracy_calculation_func)
         result_dict["bert_large_max"] = output_results(max_pooling_large, accuracy_calculation_func)
 
+        
         elmo_average, elmo_max = elmo_embeddings(tokenized_triplets, model=elmo_model)
         result_dict["elmo_average"] = output_results(elmo_average, accuracy_calculation_func)
         result_dict["elmo_max"] = output_results(elmo_max, accuracy_calculation_func)
-        output_path = "/home/zxj/Data/experiment_results/{0}_result.txt".format(name)
+
+
+        output_path = "/home/zxj/Data/experiment_results/new_result/{0}_result.txt".format(name)
         with open(output_path, mode="w+") as file:
             json.dump(result_dict, file)
