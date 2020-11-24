@@ -18,19 +18,22 @@ if __name__ == '__main__':
     prop.append({'color': '#6E2C00'})
     prop = [ele['color'] for ele in prop]
     plt.tight_layout()
-
+    avg_suffix = "{0}-AVG"
+    cls_suffix = "{0}-CLS"
+    bert_model_names = ["BERT-BASE", "BERT-LARGE", "SBERT-BASE", "SBERT-LARGE"]
     for idx, name in enumerate(file_name_list):
         file_path = os.path.join(data_dir, "{0}_result.txt".format(name))
         with open(file_path, encoding="utf-8") as file:
             result_dict = (json.load(file))
-            if result_dict["SBERT-BASE-AVG"] > result_dict["SBERT-BASE-CLS"]:
-                result_dict.pop("SBERT-BASE-CLS", None)
-            else:
-                result_dict.pop("SBERT-BASE-AVG", None)
-            if result_dict["SBERT-LARGE-AVG"] > result_dict["SBERT-LARGE-CLS"]:
-                del result_dict["SBERT-LARGE-CLS"]
-            else:
-                del result_dict["SBERT-LARGE-AVG"]
+            for bert_name in bert_model_names:
+                avg_key, cls_key = avg_suffix.format(bert_name), cls_suffix.format(bert_name)
+                avg_acc = result_dict[avg_key]
+                cls_acc = result_dict[cls_key]
+                if avg_acc > cls_acc:
+                    result_dict.pop(cls_key, None)
+                else:
+                    result_dict.pop(avg_key, None)
+
             key_list = []
             value_list = []
             for key, value in result_dict.items():
@@ -39,7 +42,6 @@ if __name__ == '__main__':
                 else:
                     key_list.append(key)
                 value_list.append(value)
-            
             y_pos = np.arange(len(value_list))
 
             plt.barh(y_pos, value_list, color=prop)

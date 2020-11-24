@@ -10,7 +10,7 @@ import spacy
 import torch
 from allennlp.modules.elmo import Elmo, batch_to_ids
 from nltk.tokenize import word_tokenize
-from transformers import BertModel, BertTokenizer
+from pytorch_pretrained_bert import BertModel, BertTokenizer
 from scipy import logical_and
 from sklearn.metrics.pairwise import cosine_similarity
 from torch.utils.data import DataLoader
