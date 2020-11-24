@@ -4,7 +4,8 @@ import configparser
 import logging
 import re
 import sys
-
+import os
+from skip_thoughts import encoder_manager, configuration
 import numpy as np
 from gensim.models import KeyedVectors
 from nltk.tokenize import sent_tokenize
@@ -102,7 +103,25 @@ def string_to_attributes(input_string):
     if input_string.isdigit():
         return int(input_string)
 
+
     return input_string
+
+
+def restore_skipthought(model_dir, model_name, skipthought_embedding, skipthought_vocab):
+    """
+    :rtype: encoder_manager.EncoderManager()
+    :return:
+    """
+    check_point_path = os.path.join(model_dir, model_name)
+    skip_thought_embedding_matrix = os.path.join(model_dir, skipthought_embedding)
+    skip_thought_vocab = os.path.join(model_dir, skipthought_vocab)
+
+    encoder = encoder_manager.EncoderManager()
+    encoder.load_model(configuration.model_config(),
+                       vocabulary_file=skip_thought_vocab,
+                       embedding_matrix_file=skip_thought_embedding_matrix,
+                       checkpoint_path=check_point_path)
+    return encoder
 
 
 def read_text_file_with_think(input_path):

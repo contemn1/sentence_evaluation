@@ -1,22 +1,22 @@
 import json
 import logging
 import os
-import sent2vec
 import sys
 from functools import reduce
 
 import numpy as np
+import sent2vec
 import spacy
 import torch
 from allennlp.modules.elmo import Elmo, batch_to_ids
 from nltk.tokenize import word_tokenize
-from pytorch_pretrained_bert import BertModel
-from pytorch_pretrained_bert import BertTokenizer
+from transformers import BertModel, BertTokenizer
 from scipy import logical_and
 from sklearn.metrics.pairwise import cosine_similarity
 from torch.utils.data import DataLoader
+from sentence_transformers import SentenceTransformer
 
-from IOUtil import get_glove
+from IOUtil import get_glove, restore_skipthought
 from IOUtil import get_word_dict, read_file
 from config import init_argument_parser
 from dataset.custom_dataset import TextIndexDataset
@@ -110,7 +110,7 @@ def get_embedding_from_glove(glove_path, power=1):
 def get_embedding_from_infersent(model_path, word2vec_path, batch_size=128,
                                  version=2, use_cuda=True):
     def get_infersent_embedding(sentences):
-        model = resume_model(model_path, word2vec_path, version, use_cuda) # InferSent
+        model = resume_model(model_path, word2vec_path, version, use_cuda)  # InferSent
         model.build_vocab(sentences, tokenize=True)
         if use_cuda:
             model = model.cuda()
@@ -333,7 +333,6 @@ def concatenation_encode(data_path):
     elmo_model.eval()
     bert_model.eval()
     tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
-
     for idx, path in enumerate(file_path_list):
         average_pooling_tensor = None
         max_pooling_tensor = None
@@ -392,10 +391,27 @@ def concatenation_encode(data_path):
         print("\t& ".join(max_pooling_result) + """\\""")
 
 
-if __name__ == '__main__':
+def calculate_sbert_accuracy(sentence_list, accuracy_func):
+    new_name_dict = {"SBERT-BASE-AVG": "bert-base-nli-mean-tokens",
+                     "SBERT-LARGE-AVG": "bert-large-nli-mean-tokens",
+                     "SBERT-BASE-CLS": "bert-base-nli-cls-token",
+                     "SBERT-LARGE-CLS": "bert-large-nli-cls-token",
+                     "SRoBERTa-BASE-AVG": "roberta-base-nli-mean-tokens",
+                     "SRoBERTa-LARGE-AVG": "roberta-large-nli-mean-tokens"}
+    result_dict = {}
+    for output_name, model_name in new_name_dict.items():
+        model = SentenceTransformer(model_name)
+        embedding_list = model.encode(sentence_list, batch_size=32)
+        embeddings = np.vstack(embedding_list)
+        accuracy_result = output_results(embeddings=embeddings,  calculate_accuracy=accuracy_func)
+        result_dict[output_name] = accuracy_result
+    return result_dict
+
+
+def main():
     config = init_argument_parser().parse_args()
-    nlp = spacy.load('en_core_web_sm')
-    file_name_list = ["adjective_compositionality", "factual_relatedness"]
+    file_name_list = ["adjective_compositionality", "argument_compositionality", "factual_relatedness",
+                      "negation_detection", "argument_sensitivity", "negation_variant"]
     accuracy_calculation_methods = [normal_accuracy, normal_accuracy, normal_accuracy,
                                     normal_accuracy, normal_accuracy, negation_variant_accuracy]
     infer_sent_dict_path = [config.glove_path, config.fast_text_path]
@@ -403,36 +419,33 @@ if __name__ == '__main__':
     bert_base_tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
     bert_large_tokenzier = BertTokenizer.from_pretrained("bert-large-uncased")
 
-   # bert_base_snli = BertModel.from_pretrained('bert-base-uncased', state_dict=model_state_dict)
+    # bert_base_snli = BertModel.from_pretrained('bert-base-uncased', state_dict=model_state_dict)
 
     bert_base_model = BertModel.from_pretrained("bert-base-uncased")
     bert_large_model = BertModel.from_pretrained("bert-large-uncased")
     bert_base_model.eval()
     bert_large_model.eval()
 
-
     options_file = "https://s3-us-west-2.amazonaws.com/allennlp/models/elmo/2x4096_512_2048cnn_2xhighway/elmo_2x4096_512_2048cnn_2xhighway_options.json"
     weight_file = "https://s3-us-west-2.amazonaws.com/allennlp/models/elmo/2x4096_512_2048cnn_2xhighway/elmo_2x4096_512_2048cnn_2xhighway_weights.hdf5"
 
     elmo_model = Elmo(options_file, weight_file, 1, dropout=0)
+
     glove_encoder = get_embedding_from_glove(config.glove_path)
 
 
     for idx, name in enumerate(file_name_list):
         file_path = os.path.join(config.data_path, "{0}.txt".format(name))
         triplets = sentences_unfold(file_path=file_path, delimiter="\t")
+        nlp = spacy.load('en_core_web_sm')
+
         tokenized_triplets = [[token.text for token in nlp(sent)] for sent in triplets]
 
-        result_dict = {"glove": 0, "infersentV1": 0, "infersentV2": 0,
-                       "bert_base_cls": 0, "bert_base_average": 0, "bert_base_max": 0,
-                       "bert_large_cls": 0, "bert_large_average": 0, "bert_large_max": 0,
-                       "elmo_average": 0, "elmo_max": 0}
+        result_dict = {"glove": 0, "infersentV1": 0, "infersentV2": 0, "skip_thought": 0}
 
         accuracy_calculation_func = accuracy_calculation_methods[idx]
 
-
         result_dict["glove"] = output_results(glove_encoder(triplets), accuracy_calculation_func)
-        
 
         for version in range(1, 3):
             model_path = config.infer_sent_model_path.format(version)
@@ -441,30 +454,55 @@ if __name__ == '__main__':
             dict_key = "infersentV{0}".format(version)
             result_dict[dict_key] = output_results(infer_sent_encoder(triplets), accuracy_calculation_func)
         
+        skip_thought_encoder = restore_skipthought(config.skipthought_path, config.skipthought_model_name,
+                                            config.skipthought_embeddings, config.skipthought_vocab_name)
 
+        skip_thought_embeddings = skip_thought_encoder.encode(triplets, batch_size=64, use_norm=False)
+        result_dict["skip_thought"] = output_results(skip_thought_embeddings, accuracy_calculation_func)
 
         base_encoder = get_embedding_from_bert(bert_base_model, bert_base_tokenizer)
 
-
         cls_pooling_base, average_pooling_base, max_pooling_base = base_encoder(triplets)
 
-        result_dict["bert_base_cls"] = output_results(cls_pooling_base, accuracy_calculation_func)
-        result_dict["bert_base_average"] = output_results(average_pooling_base, accuracy_calculation_func)
-        result_dict["bert_base_max"] = output_results(max_pooling_base, accuracy_calculation_func)
-
+        result_dict["BERT-BASE-CLS"] = output_results(cls_pooling_base, accuracy_calculation_func)
+        result_dict["BERT-BASE-AVG"] = output_results(average_pooling_base, accuracy_calculation_func)
 
         large_encoder = get_embedding_from_bert(bert_large_model, bert_large_tokenzier)
         cls_pooling_large, average_pooling_large, max_pooling_large = large_encoder(triplets)
-        result_dict["bert_large_cls"] = output_results(cls_pooling_large, accuracy_calculation_func)
-        result_dict["bert_large_average"] = output_results(average_pooling_large, accuracy_calculation_func)
-        result_dict["bert_large_max"] = output_results(max_pooling_large, accuracy_calculation_func)
+        result_dict["BERT-LARGE-CLS"] = output_results(cls_pooling_large, accuracy_calculation_func)
+        result_dict["BERT-LARGE-AVG"] = output_results(average_pooling_large, accuracy_calculation_func)
 
-        
         elmo_average, elmo_max = elmo_embeddings(tokenized_triplets, model=elmo_model)
         result_dict["elmo_average"] = output_results(elmo_average, accuracy_calculation_func)
         result_dict["elmo_max"] = output_results(elmo_max, accuracy_calculation_func)
 
-
-        output_path = "/home/zxj/Data/experiment_results/new_result/{0}_result.txt".format(name)
+        new_result = calculate_sbert_accuracy(triplets, accuracy_func=accuracy_calculation_func)
+        for key, value in new_result.items():
+            result_dict[key] = value
+        output_path = "/home/zxj/Data/experiment_results/{0}_result.txt".format(name)
         with open(output_path, mode="w+") as file:
             json.dump(result_dict, file)
+
+def get_skip_thought_accuracy():
+    config = init_argument_parser().parse_args()
+    file_name_list = ["negation_detection", "argument_sensitivity", "negation_variant"]
+    accuracy_calculation_methods = [normal_accuracy, normal_accuracy, negation_variant_accuracy]
+
+    skip_thought_encoder = restore_skipthought(config.skipthought_path, config.skipthought_model_name,
+                                               config.skipthought_embeddings, config.skipthought_vocab_name)
+
+    for idx, name in enumerate(file_name_list):
+        file_path = os.path.join(config.data_path, "{0}.txt".format(name))
+        triplets = sentences_unfold(file_path=file_path, delimiter="\t")
+        output_path = "/home/zxj/Data/experiment_results/{0}_result.txt".format(name)
+        with open(output_path, mode='r+') as json_file:
+            json_dict = json.load(json_file)
+            embeddings = skip_thought_encoder.encode(triplets, batch_size=64, use_norm=False)
+            accuracy_calculation_func = accuracy_calculation_methods[idx]
+            json_dict['skip_thought'] = output_results(embeddings, calculate_accuracy=accuracy_calculation_func)
+            json_file.write("\n")
+            json_file.write(json.dumps(json_dict))
+
+
+if __name__ == '__main__':
+    main()
